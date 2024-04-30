@@ -1,5 +1,4 @@
 # translations.py
- 
 translations = {
     "title": {
         "en": "What's the value of your innovation?",
@@ -50,6 +49,12 @@ translations = {
         "en": "Submit the description of your innovation",
         "nl": "Dien de beschrijving van uw innovatie in"
     },
+ 
+    "waiting_message": {
+        "en": "⏳ ... Alien is thinking ...⌛",
+        "nl": "⏳ ... De alien is aan het nadenken ...⌛"
+    },
+ 
  
     "alien_feedback": {
         "en": "👾 The alien has provided the following feedback:",
