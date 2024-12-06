@@ -4,14 +4,11 @@ import streamlit as st
 from PIL import Image
 from bs4 import BeautifulSoup as soup
 from urllib.request import urlopen
-import io
 import nltk
 import json
-import openai
 import os
 from openai import OpenAI
 nltk.download('punkt')
-import time
 from translations import translations
 from dotenv import load_dotenv
 import os
@@ -81,7 +78,7 @@ def run():
                 st.warning(translations["username_in_use"][language])
             else:
                 add_username(user_name)
-                filename = f"{user_name}_news_data.json"
+                filename = f"data/{user_name}_data.json"
                 data = {"name": user_name}
                 with open(filename, "w") as json_file:
                     json.dump(data, json_file)
@@ -118,7 +115,7 @@ def run():
             }
  
             # Create a filename based on the user's name
-            filename = f"{user_name}_news_data.json"
+            filename = f"data/{user_name}_data.json"
  
             # Write the dictionary to a JSON file
             with open(filename, "w") as json_file:
@@ -134,11 +131,11 @@ def run():
     if st.session_state.step >= 2:
         st.subheader(translations["step2_benefits"][language])
         user_benefits= st.text_area(translations["innovation_benefits"][language])
-        filename = f"{user_name}_news_data.json"
+        filename = f"data/{user_name}_data.json"
         if st.button(translations["submit_benefits"][language], key='submit_benefits') and user_benefits != '':
             st.write(translations["waiting_message"][language])
  
-            filename = f"{user_name}_news_data.json"
+            filename = f"data/{user_name}_data.json"
  
             # Check if the file already exists
             try:
@@ -198,10 +195,10 @@ def run():
     if st.session_state.step >= 3:
         st.subheader(translations["step3_counter_benefits"][language])
         counter_to_benefits= st.text_area(translations["reply_to_feedback"][language], key='counter_to_benefits')
-        filename = f"{user_name}_news_data.json"
+        filename = f"data/{user_name}_data.json"
         if st.button(translations["submit_counter_argument"][language], key='submit_counter') and counter_to_benefits != '':
  
-            filename = f"{user_name}_news_data.json"
+            filename = f"data/{user_name}_data.json"
            
             try:
                 # Read the existing content from the file
@@ -226,11 +223,11 @@ def run():
         st.write(translations["thank_you_response"][language])
         st.subheader(translations["step3_examples"][language])
         user_examples = st.text_area(translations["request_for_examples"][language], key='user_examples')
-        filename = f"{user_name}_news_data.json"
+        filename = f"data/{user_name}_data.json"
         if st.button(translations["submit_examples"][language], key='submit_examples') and user_examples != '':
             st.write(translations["waiting_message"][language])
            
-            filename = f"{user_name}_news_data.json"
+            filename = f"data/{user_name}_data.json"
  
             # Check if the file already exists
             try:
@@ -276,10 +273,10 @@ def run():
     if st.session_state.step >= 5:
         st.subheader(translations["step5_counter_benefits"][language])
         counter_to_benefits_2= st.text_area(translations["reply_to_feedback_2"][language], key='counter_to_benefits_2')
-        filename = f"{user_name}_news_data.json"
+        filename = f"data/{user_name}_data.json"
         if st.button(translations["submit_counter_argument_2"][language], key='submit_counter_2') and counter_to_benefits_2 != '':
                        
-            filename = f"{user_name}_news_data.json"
+            filename = f"data/{user_name}_data.json"
                
             # Check if the file already exists
             try:
@@ -303,7 +300,7 @@ def run():
  
     if st.session_state.step >= 6:
                        
-            filename = f"{user_name}_news_data.json"
+            filename = f"data/{user_name}_data.json"
                
             # Check if the file already exists
             try:
@@ -371,7 +368,7 @@ def run():
  
     if st.session_state.step >= 7:    
         user_email = st.text_input(translations["share_email_if_enjoyed"][language])
-        filename = f"{user_name}_news_data.json"
+        filename = f"data/{user_name}_data.json"
         if st.button(translations["submit_email"][language], key='submit_email') and user_email != "":
             try:
                 # Read the existing content from the file
