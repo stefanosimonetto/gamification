@@ -21,6 +21,47 @@ client = OpenAI(api_key=api_key)
 
 st.set_page_config(page_title='The Value Mapping Game', page_icon='./images/UTico.ico')
 
+def load_existing_data(filename):
+    try:
+        with open(filename, "r") as json_file:
+            return json.load(json_file)
+    except FileNotFoundError:
+        return {}
+
+# Function to save the updated data back to the file
+def save_data(filename, data):
+    with open(filename, "w") as json_file:
+        json.dump(data, json_file)
+
+# Function to load the prompt template from the JSON file
+def load_prompt_template():
+    with open("prompts.json", "r") as file:
+        return json.load(file)
+
+# Function to generate the prompt
+def generate_prompt(template, existing_data, user_benefits):
+    context = template["benefits_prompt"]["context"].format(user_benefits=user_benefits)
+    task = "\n".join(template["benefits_prompt"]["task"])
+    style_guidelines = "\n".join(template["benefits_prompt"]["style_guidelines"])
+    
+    return (
+        f"**Context:**\n{context}\n\n"
+        f"**Your Task:**\n{task}\n\n"
+        f"**Style Guidelines:**\n{style_guidelines}\n"
+        f"**Now, compose your response.**"
+    )
+
+def generate_innovation_description_prompt(template, user_innovation):
+    context = template["innovation_description_prompt"]["context"].format(user_innovation=user_innovation)
+    task = "\n".join(template["innovation_description_prompt"]["task"])
+    style_guidelines = "\n".join(template["innovation_description_prompt"]["style_guidelines"])
+    
+    return (
+        f"**Context:**\n{context}\n\n"
+        f"**Your Task:**\n{task}\n\n"
+        f"**Style Guidelines:**\n{style_guidelines}\n"
+        f"**Now, compose your response.**"
+    )
 
 def check_username(username):
     with open('usernames.txt', 'r') as file:
@@ -91,37 +132,43 @@ def run():
  
     # Step 1: Innovation description
     if st.session_state.step >= 1:
+        # Load the prompt template from the file
+        prompt_template = load_prompt_template()
+
+        # Display greeting and introduction
+        st.write(translations["greeting_message"][language].format(st.session_state['user_name']))  # Display greeting
+        st.write(translations["bang_o_introduction"][language])  # Display introduction
+
+        # Step 1: Innovation description
         st.subheader(translations["step1_description"][language])
         user_innovation = st.text_area(translations["share_innovation"][language], key='user_innovation')
+
         if st.button(translations["submit_innovation_description"][language], key='submit_innovation_description') and user_innovation:
             st.write(translations["waiting_message"][language])
-            prompt = ("**Context:**"
-"You have already introduced yourself to the player. The player has now described their innovation:{}"
-"**Your Task:**"
-"- **Acknowledge the innovation**: Respond with curiosity and genuine interest in the player's innovation."
-"- **Avoid greetings**: Do not include any greetings or introductions (e.g., do not say Hello or Greetings again)."
-"- **Do not analyze or mention benefits**: At this stage, do not provide any analysis, critique, or mention the benefits of the innovation. Only express enthusiasm for your dialogue."
-"- **Keep it concise**: Limit your response to 3-4 sentences, split in 1-2 paragraphs clearly separated each other."
-"- **Tone**: Maintain a playful yet professional tone, reflecting your unique alien perspective. Few emojis are appreciated."
-"- **No questions**: Do not ask any questions in this response."
-"- **Keep the conversation open**: Ensure your response encourages the conversation to continue naturally."
-"**Now, compose your response.**").format(user_innovation)
-            response_to_innovation_from_gpt=chat_with_gpt(prompt)
+            
+            # Generate the GPT prompt using the loaded template
+            prompt = generate_innovation_description_prompt(prompt_template, user_innovation)
+
+            # Get GPT's response
+            response_to_innovation_from_gpt = chat_with_gpt(prompt)
             st.session_state.gpt_response_description = response_to_innovation_from_gpt
+
+            # Save the data in a dictionary
             data = {
                 "name": user_name,
                 "innovation": user_innovation,
                 "gpt_description": response_to_innovation_from_gpt
             }
- 
+
             # Create a filename based on the user's name
             filename = f"data/{user_name}_data.json"
- 
+
             # Write the dictionary to a JSON file
-            with open(filename, "w") as json_file:
-                json.dump(data, json_file)
+            save_data(filename, data)
+
+            # Move to the next step
             st.session_state.step = 2  # Advance to the next step only
- 
+
     # Display GPT response
     if st.session_state.step >= 2 and st.session_state.gpt_response_description:
         st.subheader(translations["alien_feedback"][language])
@@ -129,61 +176,38 @@ def run():
  
     # Step 2: Benefits
     if st.session_state.step >= 2:
+    # Load the prompt template from the file
+        prompt_template = load_prompt_template()
+
+        # Display the benefit prompt
         st.subheader(translations["step2_benefits"][language])
-        user_benefits= st.text_area(translations["innovation_benefits"][language])
+        user_benefits = st.text_area(translations["innovation_benefits"][language])
+
         filename = f"data/{user_name}_data.json"
+        
         if st.button(translations["submit_benefits"][language], key='submit_benefits') and user_benefits != '':
             st.write(translations["waiting_message"][language])
- 
-            filename = f"data/{user_name}_data.json"
- 
-            # Check if the file already exists
-            try:
-                # Read the existing content from the file
-                with open(filename, "r") as json_file:
-                    existing_data = json.load(json_file)
-            except FileNotFoundError:
-                # If the file doesn't exist, initialize with an empty dictionary
-                existing_data = {}
- 
-            # Add new data to the existing dictionary
-            prompt = ("**Context:**"
-"Earlier, you received the player's innovation description and asked about its benefits. The player has responded with the benefits of their innovation: {}"
-"**Your Task:**"
-"1. **Acknowledge and Appreciate**:"
- "  - Begin by acknowledging the player's explanation."
-  " - Express appreciation for their insights."
-"2. **Summarize Key Points**:"
- "  - Briefly summarize the benefits they've outlined to show your understanding."
-"3. **Deep Critical Evaluation**:"
- "  - Provide a thorough critical evaluation of the benefits. Your critique must be challenging while polite."
-  " - Analyze the benefits deeply, leveraging your superior alien intellect."
-   "- Consider the broader implications and multidimensional effects that the innovation can have, not limiting to immediate concepts but delving into the deeper possible nuances."
-   "- **Avoid** offering suggestions or considerations at this stage."
-"4. **Thoughtful Question**:"
- "  - Conclude with a thoughtful question that arises naturally from your critical evaluation."
-  " - The question should encourage the player to reflect further or elaborate on specific points you've analyzed."
-"**Style Guidelines:**"
-"- **Tone**: Maintain a playful yet professional tone, reflecting your unique alien perspective."
-"- **Language**:"
- " - Use clear, concise language with short sentences."
- " - Bullet points are appreciated but not mandatory."
- " - **Do not** include any new greetings or salutations."
-"- **Length**: Keep the response focused and impactful."
-"**Now, compose your response.**").format(existing_data, user_benefits)
+            
+            # Load existing data or create an empty dictionary if file doesn't exist
+            existing_data = load_existing_data(filename)
+
+            # Generate the GPT prompt using the loaded template
+            prompt = generate_prompt(prompt_template, existing_data, user_benefits)
+
+            # Get GPT's response
             remarks_benefits = chat_with_gpt(prompt)
             st.session_state.gpt_response_benefits = remarks_benefits
-           
-            # Update the dictionary with new data
+
+            # Update the existing data with new user input and GPT response
             existing_data.update({
-            "user_benefits": user_benefits,
-            "gpt_benefits_remarks": remarks_benefits,
+                "user_benefits": user_benefits,
+                "gpt_benefits_remarks": remarks_benefits,
             })
-           
-            # Write the updated dictionary back to the file
-            with open(filename, "w") as json_file:
-                json.dump(existing_data, json_file)
- 
+
+            # Save the updated data back to the file
+            save_data(filename, existing_data)
+
+            # Move to the next step
             st.session_state.step = 3
  
     # Display GPT response
