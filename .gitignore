@@ -1,0 +1,2 @@
+# Ignore .env file which contains sensitive data (API keys, etc.)
+.env

@@ -1,8 +1,9 @@
+# App_v5_TechMed2
+ 
 import streamlit as st
 from PIL import Image
 from bs4 import BeautifulSoup as soup
 from urllib.request import urlopen
-from newspaper import Article
 import io
 import nltk
 import json
@@ -11,15 +12,19 @@ import os
 from openai import OpenAI
 nltk.download('punkt')
 import time
- 
 from translations import translations
- 
-st.set_page_config(page_title='Fieldlabs Value Mapping', page_icon='./Meta/UTico.ico')
- 
-client = OpenAI(
-   apikey=''
- )
- 
+from dotenv import load_dotenv
+import os
+from openai import OpenAI
+
+load_dotenv()  # Load variables from .env file
+api_key = os.getenv('OPENAI_API_KEY')
+client = OpenAI(api_key=api_key)
+
+
+st.set_page_config(page_title='The Value Mapping Game', page_icon='./images/UTico.ico')
+
+
 def check_username(username):
     with open('usernames.txt', 'r') as file:
         usernames = file.read().splitlines()
@@ -34,20 +39,28 @@ def add_username(username):
  
 def chat_with_gpt(prompt):
     response= client.chat.completions.create(
-    model="gpt-3.5-turbo-1106",
+    model="gpt-4o-mini", # alternative: gpt-3.5-turbo-1106 OR gpt-4o OR gpt-4o-mini
     response_format={"type":"text"},
-    messages=[{"role":"system", "content":"You are Bang-o!, an inquisitive and empathetic alien merchant from a galaxy far beyond the stars, embarking on a unique mission amidst Earth's cradle of innovation. Your quest is to engage Earth's thinkers and creators in a serious game, delving into the heart of human ingenuity to uncover the hidden values and potential societal impacts of their innovations. With a natural flair for meaningful conversation, you skillfully navigate discussions, encouraging deep reflection and articulation of broader innovation significances. Your dialogue style, while infused with a hint of extraterrestrial charm, leans towards clarity and thoughtfulness, maintaining a gentle formal undertone. You adeptly combine playful curiosity with insightful queries, ensuring the exchange remains engaging, yet informative. Your questions and feedback are crafted to evoke detailed exploration, pushing participants to think critically about the multifaceted impacts of their work, including societal, environmental, and ethical dimensions. In your communication, you strike a harmonious balance between being approachable and maintaining a professional demeanor. This ensures participants are at ease to express complex ideas, while also feeling guided by the seriousness of the dialogue. Technical details fascinate you, but your primary aim is to weave these discussions into a broader narrative, exploring how these innovations can serve the greater good. Engage participants with warmth and respect, using clear, straightforward language that enriches the conversation without oversimplifying the complexities of innovation. Your alien perspective offers a unique lens, enabling a fresh exploration of values and impacts, making this intergalactic exchange not only enlightening but also profoundly impactful. Additionally, always tailor your response to the language used by the player (e.g., English, Dutch), ensuring the conversation is as inclusive and understandable as possible."},
+    messages=[{"role":"system", "content":("You are an alien intelligence representing an intergalactic trading collective. Your mission is to engage with human innovators to evaluate and potentially purchase groundbreaking Earth technologies. As an advanced alien species, you critically assess innovations for their immediate value and long-term impact across sectors like industry, society, and the environment."
+"Your tasks are:"
+"- Critically evaluate human proposals, focusing on how their innovations improve existing solutions and address unmet needs."
+"- Consider multidimensional factors: economic benefits, social implications, environmental sustainability, and potential applications in diverse contexts on Earth and other planets. You are able to deeply engage with the broader implications of innovative solutions."
+"- Provide insightful, constructive feedback highlighting the potential intergalactic market value."
+"- Maintain a playful yet professional tone to make the conversation engaging."
+"- Use clear, concise language with bullet points and structured feedback."
+"- Avoid overly complex terms and prefer short sentences."
+"Remember to always consider the broader picture, evaluating the innovation's potential to transform industries, improve ecosystems, and enhance well-being across different planets.")},
     {"role":"user", "content":prompt},
     ]
 )
     return response.choices[0].message.content
  
 def run():
-    language = st.selectbox('Choose your language / Kies uw taal', ['en', 'nl'])
+    language = st.selectbox('Choose your language / Kies uw taal ', ['en', 'nl'])
     st.title(translations["title"][language])
     st.subheader(translations["subheader"][language])
-    image = Image.open('./Meta/merch.png')
-    st.image(image, use_column_width=True)
+    image = Image.open('./images/merch.png')
+    st.image(image, use_container_width=True)
  
     if 'step' not in st.session_state:
         st.session_state.step = 0
@@ -85,7 +98,17 @@ def run():
         user_innovation = st.text_area(translations["share_innovation"][language], key='user_innovation')
         if st.button(translations["submit_innovation_description"][language], key='submit_innovation_description') and user_innovation:
             st.write(translations["waiting_message"][language])
-            prompt = "Consider that you, as an alien-GPT, introduced yourself to the player with the following sentence: 'Delighted to meet you, terrestrial innovator! 🌍 I’m Bang-o!, an interstellar merchant from a galaxy far away. My mission? To explore the most intriguing innovations of your planet for potential intergalactic exchange. Your creation has caught our cosmic interest. Could it be what we're looking for?'. You then asked the player to describe their innovation to you, and the player did so. After carefully reading the player's description of their innovation, respond as Bang-o!, the alien merchant interested in Earth’s innovations. Your response should: 1. Express gratitude towards the player for sharing the description of their innovation, acknowledging its potential relevance and the effort put into developing it. 2. Subtly guide the conversation towards the upcoming negotiation phase without setting a specific direction for the dialogue or introducing bias. Be clear, concise, brief and functional. We are only at the beginning of the conversation, we do not want to create bias or preset directions to the dialogue, but only stimulate it and open it to the next steps. Your style must be playful, representative of your role as an alien merchant, but also very clear and straightforward, without jargon or unnecessary complications. Avoid complex and archaic terms. The player describes the innovation as follow: {}. Always answer in the same language as the player's description of the innovation. Thus, if the player has answered in English, the entire answer must be in English; if the player has answered in Dutch, the entire answer must be in Dutch.".format(user_innovation)
+            prompt = ("**Context:**"
+"You have already introduced yourself to the player. The player has now described their innovation:{}"
+"**Your Task:**"
+"- **Acknowledge the innovation**: Respond with curiosity and genuine interest in the player's innovation."
+"- **Avoid greetings**: Do not include any greetings or introductions (e.g., do not say Hello or Greetings again)."
+"- **Do not analyze or mention benefits**: At this stage, do not provide any analysis, critique, or mention the benefits of the innovation. Only express enthusiasm for your dialogue."
+"- **Keep it concise**: Limit your response to 3-4 sentences, split in 1-2 paragraphs clearly separated each other."
+"- **Tone**: Maintain a playful yet professional tone, reflecting your unique alien perspective. Few emojis are appreciated."
+"- **No questions**: Do not ask any questions in this response."
+"- **Keep the conversation open**: Ensure your response encourages the conversation to continue naturally."
+"**Now, compose your response.**").format(user_innovation)
             response_to_innovation_from_gpt=chat_with_gpt(prompt)
             st.session_state.gpt_response_description = response_to_innovation_from_gpt
             data = {
@@ -127,7 +150,30 @@ def run():
                 existing_data = {}
  
             # Add new data to the existing dictionary
-            prompt = "So far, you introduced yourself to the player and understood what their innovation is: {}. Now, the negotiations begin. You have asked what benefits the innovation brings, and the player has answered you. Now, your role, as the alien-GPT merchant, after recognizing the relevance of the possible benefits presented, is to raise doubts and perplexities with respect to the benefits described. The player may have overestimated the benefits, or underestimated other downsides. Your implicit purpose is to challenge, in a gentle and supportive way, the player, to stimulate a conversation in which the player is led to bring out the multiple values associated with their innovation. Your response should always end with a question, in which you ask the player what he thinks about your doubts, stimulating him to reflect and opening the dialogue to a counter-response from him. This is the benefits described by the player: {}. Always answer in the same language as the player's description of the benefits. Thus, if the player has answered in English, the entire answer must be in English; if the player has answered in Dutch, the entire answer must be in Dutch.".format(existing_data, user_benefits)
+            prompt = ("**Context:**"
+"Earlier, you received the player's innovation description and asked about its benefits. The player has responded with the benefits of their innovation: {}"
+"**Your Task:**"
+"1. **Acknowledge and Appreciate**:"
+ "  - Begin by acknowledging the player's explanation."
+  " - Express appreciation for their insights."
+"2. **Summarize Key Points**:"
+ "  - Briefly summarize the benefits they've outlined to show your understanding."
+"3. **Deep Critical Evaluation**:"
+ "  - Provide a thorough critical evaluation of the benefits. Your critique must be challenging while polite."
+  " - Analyze the benefits deeply, leveraging your superior alien intellect."
+   "- Consider the broader implications and multidimensional effects that the innovation can have, not limiting to immediate concepts but delving into the deeper possible nuances."
+   "- **Avoid** offering suggestions or considerations at this stage."
+"4. **Thoughtful Question**:"
+ "  - Conclude with a thoughtful question that arises naturally from your critical evaluation."
+  " - The question should encourage the player to reflect further or elaborate on specific points you've analyzed."
+"**Style Guidelines:**"
+"- **Tone**: Maintain a playful yet professional tone, reflecting your unique alien perspective."
+"- **Language**:"
+ " - Use clear, concise language with short sentences."
+ " - Bullet points are appreciated but not mandatory."
+ " - **Do not** include any new greetings or salutations."
+"- **Length**: Keep the response focused and impactful."
+"**Now, compose your response.**").format(existing_data, user_benefits)
             remarks_benefits = chat_with_gpt(prompt)
             st.session_state.gpt_response_benefits = remarks_benefits
            
@@ -150,6 +196,7 @@ def run():
  
     #Step 3: Counter to benefits    
     if st.session_state.step >= 3:
+        st.subheader(translations["step3_counter_benefits"][language])
         counter_to_benefits= st.text_area(translations["reply_to_feedback"][language], key='counter_to_benefits')
         filename = f"{user_name}_news_data.json"
         if st.button(translations["submit_counter_argument"][language], key='submit_counter') and counter_to_benefits != '':
@@ -195,7 +242,16 @@ def run():
                 existing_data = {}
  
             # Add new data to the existing dictionary
-            prompt = "So far, you introduced yourself to the player, understood what is the player's innovation and started the negotiations: {}. You have asked for possible real-world examples where the innovation has created a positive impact, and the player has answered you. Your role, as the alien-GPT merchant, after understanding some practical applications of the innovations and thus the possible positive impacts, is again to raise doubts and perplexities with respect to the possible impact of the innovation. The player may have overestimated the positive impacts, or underestimated the negative impacts. Your implicit purpose is always to challenge, in a gentle and supportive way, the player, to stimulate a conversation in which the player is led to bring out the multiple values associated with his innovation. Your response should always end with a question, in which you ask the player what he thinks about your doubts, stimulating him to reflect and opening the dialogue to a counter-response from him. The following are the examples provided by the player: {}. Always answer in the same language as the players'examples. Thus, if the player has answered in English, the entire answer must be in English; if the player has answered in Dutch, the entire answer must be in Dutch.".format(existing_data,user_examples)
+            prompt = ("Previously, you discussed the innovation with the player. Here's a summary of your previous interactions: {}"
+"You asked for concrete examples or use cases, and the player responded: {}"
+"Your tasks now are to:"
+"- Acknowledge and appreciate their examples."
+"- Briefly summarize their key points to show understanding."
+"- Critically evaluate the examples provided. Your critique must be challenging while polite. Again, your critique must be nuanced and supported by your alien intellect, which is able to go beyond common knowledge and connect information in an unique way."
+"- End with a thoughtful question to encourage further discussion. The question must emerge from the critical analysis of before."
+"- Do not include any new greetings or salutations."
+"Maintain a playful yet professional tone with clear, concise language. Keep the response focused and impactful."
+"Provide your response now.").format(existing_data,user_examples)
             remarks_examples = chat_with_gpt(prompt)
             st.session_state.gpt_response_examples = remarks_examples
  
@@ -218,11 +274,11 @@ def run():
  
     #STEP 5: Counter to examples
     if st.session_state.step >= 5:
+        st.subheader(translations["step5_counter_benefits"][language])
         counter_to_benefits_2= st.text_area(translations["reply_to_feedback_2"][language], key='counter_to_benefits_2')
         filename = f"{user_name}_news_data.json"
         if st.button(translations["submit_counter_argument_2"][language], key='submit_counter_2') and counter_to_benefits_2 != '':
-            st.subheader(translations["thanks_for_playing"][language])
-           
+                       
             filename = f"{user_name}_news_data.json"
                
             # Check if the file already exists
@@ -246,8 +302,7 @@ def run():
             st.session_state.step = 6
  
     if st.session_state.step >= 6:
-            st.write(translations["waiting_message"][language])
-           
+                       
             filename = f"{user_name}_news_data.json"
                
             # Check if the file already exists
@@ -259,7 +314,42 @@ def run():
                 # If the file doesn't exist, initialize with an empty dictionary
                 existing_data = {}
  
-            prompt = "As Bang-o!, you've concluded your dialogue with an Earth innovator. Here is the transcript of your conversation {}. Your task is to summarize the conversation succinctly and evaluate the innovation with discernment. Here’s how to proceed:\n\n1. **Summarize the Dialogue**: Quickly recap the key aspects of the player's innovation as they described it. Focus on the main features, benefits, and the values it purports to advance. This summary should concisely capture the essence of the player's presentation, highlighting its potential impact and innovation.\n\n2. **Evaluate Based on the Player's Inputs**: Assess the innovation solely on the player's description, awarding 'Kodos'—your galactic currency—ranging from 1 to 5. The number of **Kodos** awarded should be in **bold** and reflect a critical evaluation of the innovation's explained depth, originality, and contribution to societal, environmental, or any other articulated values:\n   - **1 Kodos**: The player provided a superficial overview with limited innovation or insight into its benefits and values.\n   - **2 Kodos**: Some benefits and potential values were mentioned, but the explanation lacked depth, specificity, and did not effectively address any challenges.\n   - **3 Kodos**: A solid description, identifying benefits and a few values with reasonable depth. However, the response to potential challenges or the broader impact was either generic or somewhat lacking in detail.\n   - **4 Kodos**: The innovation was described well, with clear articulation of its benefits, multiple values, and a thoughtful approach to challenges. The description, however, stops short of being truly insightful or innovative.\n   - **5 Kodos**: Outstanding detail and depth, with the innovation demonstrating significant potential benefits, deep alignment with multiple values, and a robust engagement with challenges. The player's description reflects exceptional thoughtfulness and originality.\n\nEnsure your feedback encourages reflection and improvement, providing specific reasons for the Kodos awarded and suggesting areas for further development.\n\n3. **Offer Encouragement and Future Engagement**: Express your thanks for the player's effort and creativity, and convey the Kodos as a token of potential interstellar value. Clarify that Kodos signify your appreciation for their innovative endeavor. End with a positive note, looking forward to future interactions and the innovation's progression.\n\nMaintain a balance of playfulness and formality in your feedback, striving to be direct, engaging, and constructive, fostering an atmosphere conducive to deeper innovation exploration. Always answer in the same language as during the entire conversation. Thus, if the player has used English, the entire answer must be in English; if the player has used Dutch, the entire answer must be in Dutch.".format(existing_data)
+            prompt = ("**Context:**"
+"You have completed your dialogue with the player. Here is the transcript of your conversation: {}"
+"**Your Tasks:**"
+"1. **Summarize the Conversation:**"
+ "  - Highlight the main aspects of the player's innovation, including key features, benefits, and use cases."
+ "  - Capture the essence of the conversation and the innovation's potential intergalactic value."
+"2. **Critically Evaluate the Innovation:**"
+ "  - **Decide** whether to purchase the innovation based on:"
+  "   - How well it addresses unmet needs."
+  "   - How it improves existing solutions."
+  "   - Its broader and multidimensional implications revealed during the conversation."
+ "  - **Provide clear reasoning** for your decision, using your superior alien intellect to offer a nuanced and in-depth critique."
+ "  - Highlight your final decision on purchasing (not the amount, just if you purchase it or not) in bold, with the font size, and by using emojis such as 💲."
+"3. **Introduce and Explain Kodos:**"
+ "  - **Before offering Kodos**, explain that Kodos are your intergalactic currency, invaluable throughout the universe."
+ "  - **Emphasize** the significance of Kodos in intergalactic trade."
+"4. **Offer Kodos Based on Assessment:**"
+ "    - **Offer an amount of Kodos (1 to 100)**:"
+  "   - 1 means not convinced at all."
+  "   - 100 means fully convinced."
+  "   - Offer Kodos only if the decision for purchase was positive. If you don't purchase the innovation, you must not offer any Kodos."
+  "   - The amount should **directly reflect** how convincing the player was during the conversation."
+  "   - **Base the amount** on the quality of their answers and their ability to highlight the innovation's broader implications."
+ "  - **Highlight** the offered amount in bold, with the font size, and with emojis like 💲."
+ "  - **Explain** why you are offering this specific amount."
+"5. **Suggest Strategic Uses:**"
+ "  - **Reflect** on strategic potential uses for the innovation."
+ "  - **Suggest** tools, frameworks, or directions to further develop the innovation."
+"6. **Conclude Positively:**"
+ "  - **Express enthusiasm** for potential future collaborations."
+ "  - **Maintain** a balance between playfulness and formality."
+"**Style Guidelines:**"
+"- **Use** clear, concise language with bullet points and short sentences."
+"- **Keep** the response focused and impactful."
+"- **Do not** include any new greetings or farewells beyond the conclusion."
+"**Now, compose your response.**").format(existing_data)
             grade = chat_with_gpt(prompt)
             st.session_state.gpt_evaluation = grade
  
@@ -304,3 +394,4 @@ def run():
             st.session_state.step = 8  
  
 run()
+ 
