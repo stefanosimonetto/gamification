@@ -27,6 +27,9 @@ client = OpenAI(api_key=api_key)
 
 st.set_page_config(page_title='The Value Mapping Game', page_icon='./images/UTico.ico')
 
+
+
+
 def generate_counter_to_examples_prompt(template, existing_data, counter_to_benefits_2):
     context = template["counter_to_examples_prompt"]["context"].format(existing_data=existing_data, counter_to_benefits_2=counter_to_benefits_2)
     task = "\n".join(template["counter_to_examples_prompt"]["task"])
@@ -342,7 +345,7 @@ def run():
             existing_data = load_existing_data(filename)
 
             # Generate counter to examples prompt
-            prompt = generate_counter_to_examples_prompt(prompt_template, existing_data, counter_to_benefits_2)
+            prompt = generate_counter_to_examples_prompt(prompt_template , existing_data, counter_to_benefits_2)
             
             # Get GPT's response
             remarks_counter = chat_with_gpt(prompt)
