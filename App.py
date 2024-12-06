@@ -4,15 +4,21 @@ import streamlit as st
 from PIL import Image
 from bs4 import BeautifulSoup as soup
 from urllib.request import urlopen
-import nltk
 import json
 import os
 from openai import OpenAI
-nltk.download('punkt')
 from translations import translations
 from dotenv import load_dotenv
 import os
 from openai import OpenAI
+
+import nltk
+from nltk.data import find
+try:
+    find('tokenizers/punkt')
+except LookupError:
+    nltk.download('punkt')
+
 
 load_dotenv()  # Load variables from .env file
 api_key = os.getenv('OPENAI_API_KEY')
@@ -20,6 +26,42 @@ client = OpenAI(api_key=api_key)
 
 
 st.set_page_config(page_title='The Value Mapping Game', page_icon='./images/UTico.ico')
+
+def generate_counter_to_examples_prompt(template, existing_data, counter_to_benefits_2):
+    context = template["counter_to_examples_prompt"]["context"].format(existing_data=existing_data, counter_to_benefits_2=counter_to_benefits_2)
+    task = "\n".join(template["counter_to_examples_prompt"]["task"])
+    style_guidelines = "\n".join(template["counter_to_examples_prompt"]["style_guidelines"])
+    
+    return (
+        f"**Context:**\n{context}\n\n"
+        f"**Your Task:**\n{task}\n\n"
+        f"**Style Guidelines:**\n{style_guidelines}\n"
+        f"**Now, compose your response.**"
+    )
+
+# Function to generate the final evaluation prompt
+def generate_final_evaluation_prompt(template, existing_data):
+    context = template["final_evaluation_prompt"]["context"].format(existing_data=existing_data)
+    task = "\n".join(template["final_evaluation_prompt"]["task"])
+    style_guidelines = "\n".join(template["final_evaluation_prompt"]["style_guidelines"])
+    
+    return (
+        f"**Context:**\n{context}\n\n"
+        f"**Your Task:**\n{task}\n\n"
+        f"**Style Guidelines:**\n{style_guidelines}\n"
+        f"**Now, compose your response.**"
+    )
+def generate_examples_prompt(template, existing_data, user_examples):
+    context = template["examples_prompt"]["context"].format(existing_data=existing_data, user_examples=user_examples)
+    task = "\n".join(template["examples_prompt"]["task"])
+    style_guidelines = "\n".join(template["examples_prompt"]["style_guidelines"])
+    
+    return (
+        f"**Context:**\n{context}\n\n"
+        f"**Your Task:**\n{task}\n\n"
+        f"**Style Guidelines:**\n{style_guidelines}\n"
+        f"**Now, compose your response.**"
+    )
 
 def load_existing_data(filename):
     try:
@@ -244,152 +286,105 @@ def run():
  
     # STEP 4: Examples
     if st.session_state.step >= 4:
+        # Load the prompt template from the file
+        prompt_template = load_prompt_template()
+
+        # Display thank you message and examples request
         st.write(translations["thank_you_response"][language])
         st.subheader(translations["step3_examples"][language])
         user_examples = st.text_area(translations["request_for_examples"][language], key='user_examples')
+
         filename = f"data/{user_name}_data.json"
+        
         if st.button(translations["submit_examples"][language], key='submit_examples') and user_examples != '':
             st.write(translations["waiting_message"][language])
-           
-            filename = f"data/{user_name}_data.json"
- 
-            # Check if the file already exists
-            try:
-                # Read the existing content from the file
-                with open(filename, "r") as json_file:
-                    existing_data = json.load(json_file)
-            except FileNotFoundError:
-                # If the file doesn't exist, initialize with an empty dictionary
-                existing_data = {}
- 
-            # Add new data to the existing dictionary
-            prompt = ("Previously, you discussed the innovation with the player. Here's a summary of your previous interactions: {}"
-"You asked for concrete examples or use cases, and the player responded: {}"
-"Your tasks now are to:"
-"- Acknowledge and appreciate their examples."
-"- Briefly summarize their key points to show understanding."
-"- Critically evaluate the examples provided. Your critique must be challenging while polite. Again, your critique must be nuanced and supported by your alien intellect, which is able to go beyond common knowledge and connect information in an unique way."
-"- End with a thoughtful question to encourage further discussion. The question must emerge from the critical analysis of before."
-"- Do not include any new greetings or salutations."
-"Maintain a playful yet professional tone with clear, concise language. Keep the response focused and impactful."
-"Provide your response now.").format(existing_data,user_examples)
+
+            # Load existing data or create an empty dictionary if file doesn't exist
+            existing_data = load_existing_data(filename)
+
+            # Generate the GPT prompt using the loaded template
+            prompt = generate_examples_prompt(prompt_template, existing_data, user_examples)
+
+            # Get GPT's response
             remarks_examples = chat_with_gpt(prompt)
             st.session_state.gpt_response_examples = remarks_examples
- 
-            # Update the dictionary with new data
+
+            # Update the existing data with new examples and GPT response
             existing_data.update({
                 "user_examples": user_examples,
-                "gpt_examples_remarks":remarks_examples
+                "gpt_examples_remarks": remarks_examples
             })
- 
-            # Write the updated dictionary back to the file
-            with open(filename, "w") as json_file:
-                json.dump(existing_data, json_file)
- 
+
+            # Save the updated data back to the file
+            save_data(filename, existing_data)
+
+            # Move to the next step
             st.session_state.step = 5
- 
-    # Display GPT response
+
+# Display GPT response
     if st.session_state.step >= 5 and st.session_state.gpt_response_examples:
+        # Load the prompt template from the file
+        prompt_template = load_prompt_template()
+
         st.subheader(translations["alien_feedback"][language])
         st.write(st.session_state.gpt_response_examples)
- 
-    #STEP 5: Counter to examples
+
+        # STEP 5: Counter to examples
     if st.session_state.step >= 5:
         st.subheader(translations["step5_counter_benefits"][language])
-        counter_to_benefits_2= st.text_area(translations["reply_to_feedback_2"][language], key='counter_to_benefits_2')
+        counter_to_benefits_2 = st.text_area(translations["reply_to_feedback_2"][language], key='counter_to_benefits_2')
+        
         filename = f"data/{user_name}_data.json"
+        
         if st.button(translations["submit_counter_argument_2"][language], key='submit_counter_2') and counter_to_benefits_2 != '':
-                       
-            filename = f"data/{user_name}_data.json"
-               
-            # Check if the file already exists
-            try:
-                # Read the existing content from the file
-                with open(filename, "r") as json_file:
-                    existing_data = json.load(json_file)
-            except FileNotFoundError:
-                # If the file doesn't exist, initialize with an empty dictionary
-                existing_data = {}
-           
-            # Update the dictionary with new data
+            st.write(translations["waiting_message"][language])
+
+            existing_data = load_existing_data(filename)
+
+            # Generate counter to examples prompt
+            prompt = generate_counter_to_examples_prompt(prompt_template, existing_data, counter_to_benefits_2)
+            
+            # Get GPT's response
+            remarks_counter = chat_with_gpt(prompt)
+            st.session_state.gpt_counter_response = remarks_counter
+
+            # Update the existing data with the counter response
             existing_data.update({
-                "counter_to_examples":counter_to_benefits_2
+                "counter_to_examples": counter_to_benefits_2,
+                "gpt_counter_response": remarks_counter
             })
- 
-            # Write the updated dictionary back to the file
-            with open(filename, "w") as json_file:
-                json.dump(existing_data, json_file)
- 
+
+            # Save the updated data back to the file
+            save_data(filename, existing_data)
+
             st.session_state.step = 6
- 
+
+    # Step 6: Final Evaluation
     if st.session_state.step >= 6:
-                       
-            filename = f"data/{user_name}_data.json"
-               
-            # Check if the file already exists
-            try:
-                # Read the existing content from the file
-                with open(filename, "r") as json_file:
-                    existing_data = json.load(json_file)
-            except FileNotFoundError:
-                # If the file doesn't exist, initialize with an empty dictionary
-                existing_data = {}
+        existing_data = load_existing_data(filename)
+
+        # Generate final evaluation prompt
+        prompt = generate_final_evaluation_prompt(prompt_template, existing_data)
+        
+        # Get GPT's final evaluation
+        final_evaluation = chat_with_gpt(prompt)
+        st.session_state.gpt_evaluation = final_evaluation
+
+        # Update the existing data with the final evaluation
+        existing_data.update({
+            "gpt_evaluation": final_evaluation
+        })
+
+        # Save the updated data back to the file
+        save_data(filename, existing_data)
+
+        st.session_state.step = 7
  
-            prompt = ("**Context:**"
-"You have completed your dialogue with the player. Here is the transcript of your conversation: {}"
-"**Your Tasks:**"
-"1. **Summarize the Conversation:**"
- "  - Highlight the main aspects of the player's innovation, including key features, benefits, and use cases."
- "  - Capture the essence of the conversation and the innovation's potential intergalactic value."
-"2. **Critically Evaluate the Innovation:**"
- "  - **Decide** whether to purchase the innovation based on:"
-  "   - How well it addresses unmet needs."
-  "   - How it improves existing solutions."
-  "   - Its broader and multidimensional implications revealed during the conversation."
- "  - **Provide clear reasoning** for your decision, using your superior alien intellect to offer a nuanced and in-depth critique."
- "  - Highlight your final decision on purchasing (not the amount, just if you purchase it or not) in bold, with the font size, and by using emojis such as 💲."
-"3. **Introduce and Explain Kodos:**"
- "  - **Before offering Kodos**, explain that Kodos are your intergalactic currency, invaluable throughout the universe."
- "  - **Emphasize** the significance of Kodos in intergalactic trade."
-"4. **Offer Kodos Based on Assessment:**"
- "    - **Offer an amount of Kodos (1 to 100)**:"
-  "   - 1 means not convinced at all."
-  "   - 100 means fully convinced."
-  "   - Offer Kodos only if the decision for purchase was positive. If you don't purchase the innovation, you must not offer any Kodos."
-  "   - The amount should **directly reflect** how convincing the player was during the conversation."
-  "   - **Base the amount** on the quality of their answers and their ability to highlight the innovation's broader implications."
- "  - **Highlight** the offered amount in bold, with the font size, and with emojis like 💲."
- "  - **Explain** why you are offering this specific amount."
-"5. **Suggest Strategic Uses:**"
- "  - **Reflect** on strategic potential uses for the innovation."
- "  - **Suggest** tools, frameworks, or directions to further develop the innovation."
-"6. **Conclude Positively:**"
- "  - **Express enthusiasm** for potential future collaborations."
- "  - **Maintain** a balance between playfulness and formality."
-"**Style Guidelines:**"
-"- **Use** clear, concise language with bullet points and short sentences."
-"- **Keep** the response focused and impactful."
-"- **Do not** include any new greetings or farewells beyond the conclusion."
-"**Now, compose your response.**").format(existing_data)
-            grade = chat_with_gpt(prompt)
-            st.session_state.gpt_evaluation = grade
- 
-            # Update the dictionary with new data
-            existing_data.update({
-                "gpt_evaluation":grade
-            })
- 
-            # Write the updated dictionary back to the file
-            with open(filename, "w") as json_file:
-                json.dump(existing_data, json_file)
- 
-            st.session_state.step = 7
- 
-    # Display GPT response
+# Display GPT response
     if st.session_state.step >= 7 and st.session_state.gpt_evaluation:
         st.subheader(translations["alien_evaluation"][language])
         st.write(st.session_state.gpt_evaluation)
- 
+
     if st.session_state.step >= 7:    
         user_email = st.text_input(translations["share_email_if_enjoyed"][language])
         filename = f"data/{user_name}_data.json"
@@ -401,9 +396,9 @@ def run():
             except FileNotFoundError:
                 # If the file doesn't exist, initialize with an empty dictionary
                 existing_data = {}
-               
+            
             st.subheader(translations["thank_you_for_playing"][language])
- 
+
             # Update the dictionary with new data
             existing_data.update({
                 "user_email": user_email
@@ -411,8 +406,8 @@ def run():
             # Write the updated dictionary back to the file
             with open(filename, "w") as json_file:
                 json.dump(existing_data, json_file)
- 
+
             st.session_state.step = 8  
- 
+    
 run()
  
