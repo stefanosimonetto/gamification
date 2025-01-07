@@ -1,9 +1,8 @@
-# What's the value of your innovation?
-# A value mapping game
 ![image](https://github.com/user-attachments/assets/c8e71bb9-f79e-4da5-809c-0b2ffd9bd926)
 
 ![image](https://github.com/user-attachments/assets/265f7bdb-d248-458e-a8d5-988a3be05642)
 
+![image](https://github.com/user-attachments/assets/7d544da7-f05e-4a3c-b4b8-66a40ed7cab8)
 
 ## Usage
 - Clone my repository into a VM (e.g. AWS).
