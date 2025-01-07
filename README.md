@@ -4,6 +4,16 @@
 
 ![image](https://github.com/user-attachments/assets/7d544da7-f05e-4a3c-b4b8-66a40ed7cab8)
 
+## Goal of this project
+Foster Critical Thinking: Develop and enhance critical thinking skills focused on innovation.
+
+Receive Constructive Feedback: Gain valuable insights and suggestions to refine ideas effectively.
+
+Interactive AI Engagement: Engage with an AI agent for real-time assistance and learning.
+
+Data Collection for Insights: Gather and analyze data to gain insights and improve.
+
+
 ## Usage
 - Clone my repository into a VM (e.g. AWS).
 - Run following command.
@@ -15,11 +25,19 @@
   ```
   streamlit run App.py --server.port 80
   ```
-- For more explanation of this project see the tutorial on Machine Learning Hub YouTube channel.
 
+## Already played in the following scenarios:
+Fieldlab experts (practitioners and policymakers)
+Civil engineering (academics)
+Innovations class (students)
+Energy transition (policymakers)
+Game designers for innovation (designer experts)
+Biomedical (Techmed event)
+AI and IoT group (Pervasive systems)
 
-## Just follow☝️ me and Star⭐ my repository 
-
-## [Buy me a Coffee☕](https://www.buymeacoffee.com/spidy20)
-## [Donate me on PayPal](https://www.paypal.me/spidy1820)
-## Donate me via UPI - machinelearninghubai@okhdfcbank
+## PLay the game, steps to follow:
+Describe your innovation
+What benefits does it bring?
+Answer the feedback!
+Any use cases? Actual or envisioned
+Answer the feedback again!
