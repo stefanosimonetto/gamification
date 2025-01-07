@@ -20,10 +20,14 @@ Data Collection for Insights: Gather and analyze data to gain insights and impro
   ```
   pip install -r requirements.txt
   ```
-- `App.py` is the main Python file of Streamlit Web-Application. 
+- `App.py` is the main Python file of Streamlit Web-Application.
+
+-   ```
+ cd gamification
+ ```
 - To run app, write following command in CMD. or use any IDE.
   ```
-  streamlit run App.py --server.port 80
+  python3 -m streamlit run App.py
   ```
 
 ## Already played in the following scenarios:
