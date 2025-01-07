@@ -27,17 +27,29 @@ Data Collection for Insights: Gather and analyze data to gain insights and impro
   ```
 
 ## Already played in the following scenarios:
+
 Fieldlab experts (practitioners and policymakers)
+
 Civil engineering (academics)
+
 Innovations class (students)
+
 Energy transition (policymakers)
+
 Game designers for innovation (designer experts)
+
 Biomedical (Techmed event)
+
 AI and IoT group (Pervasive systems)
 
 ## PLay the game, steps to follow:
+
 Describe your innovation
+
 What benefits does it bring?
+
 Answer the feedback!
+
 Any use cases? Actual or envisioned
+
 Answer the feedback again!
