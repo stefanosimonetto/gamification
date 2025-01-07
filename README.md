@@ -22,9 +22,7 @@ Data Collection for Insights: Gather and analyze data to gain insights and impro
   ```
 - `App.py` is the main Python file of Streamlit Web-Application.
 
--   ```
- cd gamification
- ```
+-   ``` cd gamification ```
 - To run app, write following command in CMD. or use any IDE.
   ```
   python3 -m streamlit run App.py
