@@ -1,26 +1,12 @@
-# InNews🇮🇳: News Summarizer App
+# What's the value of your innovation?
+# A value mapping game
+![image](https://github.com/user-attachments/assets/c8e71bb9-f79e-4da5-809c-0b2ffd9bd926)
 
-[![forthebadge made-with-python](http://ForTheBadge.com/images/badges/made-with-python.svg)](https://www.python.org/)                 
-[![Python 3.8](https://img.shields.io/badge/python-3.8-blue.svg)](https://www.python.org/downloads/release/python-360/)   
+![image](https://github.com/user-attachments/assets/265f7bdb-d248-458e-a8d5-988a3be05642)
 
-## [Watch Tutorial for this project](https://youtu.be/HHYqpHwGDgQ)
-<img src="https://github.com/Spidy20/InNews/blob/master/thumb.jpg">
-
-## [Demo of App](https://share.streamlit.io/spidy20/innews/App.py)
-
-## Source
-- For summarizing the news I have used [Newspaper3k](https://newspaper.readthedocs.io/en/latest/)
-- For scraping the news I have used Google News RSS API.
-
-## Features
-- Trending News
-- Favorite Topics
-- Search News
-- Quantity control
 
 ## Usage
-- Clone my repository.
-- Open CMD in working directory.
+- Clone my repository into a VM (e.g. AWS).
 - Run following command.
   ```
   pip install -r requirements.txt
