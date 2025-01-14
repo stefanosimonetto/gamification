@@ -30,22 +30,6 @@ Data Collection for Insights: Gather and analyze data to gain insights and impro
   python3 -m streamlit run App.py
   ```
 
-## Already played in the following scenarios:
-
-Fieldlab experts (practitioners and policymakers)
-
-Civil engineering (academics)
-
-Innovations class (students)
-
-Energy transition (policymakers)
-
-Game designers for innovation (designer experts)
-
-Biomedical (Techmed event)
-
-AI and IoT group (Pervasive systems)
-
 ## PLay the game, steps to follow:
 
 Describe your innovation
