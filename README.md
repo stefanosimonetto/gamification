@@ -30,6 +30,19 @@ Data Collection for Insights: Gather and analyze data to gain insights and impro
   python3 -m streamlit run App.py
   ```
 
+##Disclaimer
+If the script does not run as intended, it is most likely due to one or more of the following reasons:
+
+EC2 Instance Configuration: The script is designed to run on an AWS EC2 instance. Ensure that the instance is properly set up with the required specifications.
+
+Administrative Privileges: The script requires sudo privileges to execute certain commands. Make sure your user account has the necessary permissions.
+
+Missing Resources: Some required image files have been intentionally excluded from this repository for anonymity. These files need to be manually added as specified in the script.
+
+OpenAI API Key: The script relies on access to the OpenAI API, which requires a valid API key. Make sure to add your OpenAI API key in the appropriate configuration file or environment variable.
+
+Please ensure the above requirements are met before running the script. 
+
 ## PLay the game, steps to follow:
 
 Describe your innovation
