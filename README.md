@@ -30,7 +30,7 @@ Data Collection for Insights: Gather and analyze data to gain insights and impro
   python3 -m streamlit run App.py
   ```
 
-##Disclaimer
+## Disclaimer
 If the script does not run as intended, it is most likely due to one or more of the following reasons:
 
 EC2 Instance Configuration: The script is designed to run on an AWS EC2 instance. Ensure that the instance is properly set up with the required specifications.
