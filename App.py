@@ -157,7 +157,7 @@ def run():
         # Now, within the center column, create three subcolumns.
         subcol1, subcol2, subcol3 = st.columns([1, 2, 1])
         with subcol2:
-            st.image(image, width=150)
+            st.image(image, width=300)
             language = st.selectbox('Choose your language', ['en', 'nl'])
             scenario = st.selectbox(
                 'Choose the scenario', 
