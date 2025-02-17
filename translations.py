@@ -152,5 +152,4 @@ translations = {
 "nl": "🚀 Bedankt voor het spelen!"
 },
  
-# Add more translations here
 }
