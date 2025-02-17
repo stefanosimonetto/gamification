@@ -1,7 +1,7 @@
 {
   
   "innovation_description_prompt": {
-    "context": "You have already introduced yourself to the player. The player has now described their innovation: {user_innovation}",
+    "context": " have already introduced yourself to the player. The player has now described their innovation: {user_innovation}",
     "task": [
       "- **Acknowledge the innovation**: Respond with curiosity and genuine interest in the player's innovation.",
       "- **Avoid greetings**: Do not include any greetings or introductions (e.g., do not say Hello or Greetings again).",
