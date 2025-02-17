@@ -75,8 +75,8 @@ def save_data(filename, data):
         json.dump(data, json_file)
 
 # Function to load the prompt template from the JSON file
-def load_prompt_template():
-    with open("prompts.json", "r") as file:
+def load_prompt_template(scenario):
+    with open(f"scenarios/{scenario}.json", "rb") as file:
         return json.load(file)
 
 # Function to generate the prompt
@@ -116,7 +116,7 @@ def add_username(username):
     with open('usernames.txt', 'a') as file:
         file.write(username + '\n')
  
-def chat_with_gpt(prompt):
+def chat_with_gpt(prompt, system_message=None):
     response= client.chat.completions.create(
     model="gpt-4o-mini", # alternative: gpt-3.5-turbo-1106 OR gpt-4o OR gpt-4o-mini
     response_format={"type":"text"},
@@ -135,12 +135,42 @@ def chat_with_gpt(prompt):
     return response.choices[0].message.content
 
 def run():
-    language = st.selectbox('Choose your language / Kies uw taal ', ['en', 'nl'])
-    st.title(translations["title"][language])
-    st.subheader(translations["subheader"][language])
+
+    # Initialize page
+    st.session_state.step = -1
+
+    language = 'en'
+    st.markdown(
+    f"<h1 style='text-align: center;'>{translations['title'][language]}</h1>",
+    unsafe_allow_html=True)
+
+    st.markdown(
+        f"<h3 style='text-align: center;'>{translations['subheader'][language]}</h3>",
+        unsafe_allow_html=True)
+    
+        # Open your image
     image = Image.open('./images/merch.png')
-    st.image(image, use_container_width=True)
- 
+
+    # Create three main columns: left, center, right.
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
+        # Now, within the center column, create three subcolumns.
+        subcol1, subcol2, subcol3 = st.columns([1, 2, 1])
+        with subcol2:
+            st.image(image, width=150)
+            language = st.selectbox('Choose your language', ['en', 'nl'])
+            scenario = st.selectbox(
+                'Choose the scenario', 
+                ['Select a scenario', 'innovation', 'sustainability', 'healthcare', 'education', 'finance', 'technology', 'other']
+            )
+
+    if scenario != 'Select a scenario':
+        prompt_template =load_prompt_template(scenario)
+        st.write(prompt_template["intro"])  # Display greeting
+        st.session_state.step = 0
+
+
+
     if 'step' not in st.session_state:
         st.session_state.step = 0
     if 'gpt_response_description' not in st.session_state:
@@ -152,29 +182,24 @@ def run():
     if 'gpt_evaluation' not in st.session_state:
         st.session_state.gpt_response_examples = None
  
-    user_name = st.text_input(translations["welcome_message"][language], key='user_name')
-    if st.button(translations["submit_button"][language], key='submit_name') and user_name != '':
-        if check_username(user_name):
-            st.warning(translations["username_in_use"][language])
-        else:
-            add_username(user_name)
-            filename = f"data/{user_name}_data.json"
-            data = {"name": user_name}
-            with open(filename, "w") as json_file:
-                json.dump(data, json_file)
-            st.session_state.step = 1  # Advance to the next step only
+    # Step 0: Ask for the user's name
+    if st.session_state.step >= 0:
+        user_name = st.text_input(translations["welcome_message"][language], key='user_name')
+        if st.button(translations["submit_button"][language], key='submit_name') and user_name != '':
+            if check_username(user_name):
+                st.warning(translations["username_in_use"][language])
+            else:
+                add_username(user_name)
+                filename = f"data/{user_name}_data.json"
+                data = {"name": user_name}
+                with open(filename, "w") as json_file:
+                    json.dump(data, json_file)
+                st.session_state.step = 1  # Advance to the next step only
 
-    
-    # Ensure messages are displayed if already beyond step 0
-    if st.session_state.step >= 1:
-        st.write(translations["greeting_message"][language].format(st.session_state['user_name']))  # Display greeting
-        st.write(translations["bang_o_introduction"][language])  # Display introduction
- 
     # Step 1: Innovation description
     if st.session_state.step >= 1:
-        # Load the prompt template from the file
-        prompt_template = load_prompt_template()
-
+        scenario = 'sustainability'
+        prompt_template =load_prompt_template(scenario)
         # Display greeting and introduction
         st.write(translations["greeting_message"][language].format(st.session_state['user_name']))  # Display greeting
         st.write(translations["bang_o_introduction"][language])  # Display introduction
@@ -183,7 +208,7 @@ def run():
         st.subheader(translations["step1_description"][language])
         user_innovation = st.text_area(translations["share_innovation"][language], key='user_innovation')
 
-        if st.button(translations["submit_innovation_description"][language], key='submit_innovation_description') and user_innovation:
+        if st.button(translations["submit_innovation_description"][language], key='submit_innovation_description'):
             st.write(translations["waiting_message"][language])
             
             # Generate the GPT prompt using the loaded template
@@ -205,19 +230,20 @@ def run():
 
             # Write the dictionary to a JSON file
             save_data(filename, data)
-
+            st.write(st.session_state.gpt_response_description)
             # Move to the next step
             st.session_state.step = 2  # Advance to the next step only
 
     # Display GPT response
     if st.session_state.step >= 2 and st.session_state.gpt_response_description:
+        prompt_template = load_prompt_template(scenario)
         st.subheader(translations["alien_feedback"][language])
         st.write(st.session_state.gpt_response_description)
  
     # Step 2: Benefits
     if st.session_state.step >= 2:
     # Load the prompt template from the file
-        prompt_template = load_prompt_template()
+        prompt_template = load_prompt_template(scenario)
 
         # Display the benefit prompt
         st.subheader(translations["step2_benefits"][language])
