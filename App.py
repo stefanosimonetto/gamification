@@ -10,7 +10,6 @@ from openai import OpenAI
 from translations import translations
 from dotenv import load_dotenv
 import os
-from openai import OpenAI
 import nltk
 from nltk.data import find
 
@@ -135,9 +134,16 @@ def chat_with_gpt(prompt, system_message=None):
     return response.choices[0].message.content
 
 def run():
-
-    # Initialize page
-    st.session_state.step = -1
+    if 'count' not in st.session_state:
+        st.session_state.count = 0
+    if 'gpt_response_description' not in st.session_state:
+        st.session_state.gpt_response_description = None
+    if 'gpt_response_benefits' not in st.session_state:
+        st.session_state.gpt_response_benefits = None
+    if 'gpt_response_examples' not in st.session_state:
+        st.session_state.gpt_response_examples = None
+    if 'gpt_evaluation' not in st.session_state:
+        st.session_state.gpt_response_examples = None
 
     language = 'en'
     st.markdown(
@@ -167,23 +173,10 @@ def run():
     if scenario != 'Select a scenario':
         prompt_template =load_prompt_template(scenario)
         st.write(prompt_template["intro"])  # Display greeting
-        st.session_state.step = 0
+        st.session_state.count += 1
 
-
-
-    if 'step' not in st.session_state:
-        st.session_state.step = 0
-    if 'gpt_response_description' not in st.session_state:
-        st.session_state.gpt_response_description = None
-    if 'gpt_response_benefits' not in st.session_state:
-        st.session_state.gpt_response_benefits = None
-    if 'gpt_response_examples' not in st.session_state:
-        st.session_state.gpt_response_examples = None
-    if 'gpt_evaluation' not in st.session_state:
-        st.session_state.gpt_response_examples = None
- 
     # Step 0: Ask for the user's name
-    if st.session_state.step >= 0:
+    if st.session_state.count >= 1:
         user_name = st.text_input(translations["welcome_message"][language], key='user_name')
         if st.button(translations["submit_button"][language], key='submit_name') and user_name != '':
             if check_username(user_name):
@@ -194,20 +187,19 @@ def run():
                 data = {"name": user_name}
                 with open(filename, "w") as json_file:
                     json.dump(data, json_file)
-                st.session_state.step = 1  # Advance to the next step only
+
 
     # Step 1: Innovation description
-    if st.session_state.step >= 1:
-        scenario = 'sustainability'
+    if st.session_state.count >= 2:
+        st.write(scenario)  
+        st.write(st.session_state.count)
         prompt_template =load_prompt_template(scenario)
         # Display greeting and introduction
         st.write(translations["greeting_message"][language].format(st.session_state['user_name']))  # Display greeting
         st.write(translations["bang_o_introduction"][language])  # Display introduction
 
-        # Step 1: Innovation description
         st.subheader(translations["step1_description"][language])
         user_innovation = st.text_area(translations["share_innovation"][language], key='user_innovation')
-
         if st.button(translations["submit_innovation_description"][language], key='submit_innovation_description'):
             st.write(translations["waiting_message"][language])
             
@@ -232,16 +224,15 @@ def run():
             save_data(filename, data)
             st.write(st.session_state.gpt_response_description)
             # Move to the next step
-            st.session_state.step = 2  # Advance to the next step only
 
     # Display GPT response
-    if st.session_state.step >= 2 and st.session_state.gpt_response_description:
+    if st.session_state.count >= 3 and st.session_state.gpt_response_description:
         prompt_template = load_prompt_template(scenario)
         st.subheader(translations["alien_feedback"][language])
         st.write(st.session_state.gpt_response_description)
  
     # Step 2: Benefits
-    if st.session_state.step >= 2:
+    if st.session_state.count >= 3:
     # Load the prompt template from the file
         prompt_template = load_prompt_template(scenario)
 
@@ -272,17 +263,14 @@ def run():
 
             # Save the updated data back to the file
             save_data(filename, existing_data)
-
-            # Move to the next step
-            st.session_state.step = 3
  
     # Display GPT response
-    if st.session_state.step >= 3 and st.session_state.gpt_response_benefits:
+    if st.session_state.count >= 4 and st.session_state.gpt_response_benefits:
         st.subheader(translations["alien_feedback"][language])
         st.write(st.session_state.gpt_response_benefits)
  
     #Step 3: Counter to benefits    
-    if st.session_state.step >= 3:
+    if st.session_state.count >= 4:
         st.subheader(translations["step3_counter_benefits"][language])
         counter_to_benefits= st.text_area(translations["reply_to_feedback"][language], key='counter_to_benefits')
         filename = f"data/{user_name}_data.json"
@@ -305,13 +293,11 @@ def run():
             # Write the updatefilenamed dictionary back to the file
             with open(filename, "w") as json_file:
                 json.dump(existing_data, json_file)
- 
-            st.session_state.step = 4
- 
+
     # STEP 4: Examples
-    if st.session_state.step >= 4:
+    if st.session_state.count >= 5:
         # Load the prompt template from the file
-        prompt_template = load_prompt_template()
+        prompt_template = load_prompt_template(scenario)
 
         # Display thank you message and examples request
         st.write(translations["thank_you_response"][language])
@@ -342,19 +328,16 @@ def run():
             # Save the updated data back to the file
             save_data(filename, existing_data)
 
-            # Move to the next step
-            st.session_state.step = 5
-
 # Display GPT response
-    if st.session_state.step >= 5 and st.session_state.gpt_response_examples:
+    if st.session_state.count >= 6 and st.session_state.gpt_response_examples:
         # Load the prompt template from the file
-        prompt_template = load_prompt_template()
+        prompt_template = load_prompt_template(scenario)
 
         st.subheader(translations["alien_feedback"][language])
         st.write(st.session_state.gpt_response_examples)
 
         # STEP 5: Counter to examples
-    if st.session_state.step >= 5:
+    if st.session_state.count >= 6:
         st.subheader(translations["step5_counter_benefits"][language])
         counter_to_benefits_2 = st.text_area(translations["reply_to_feedback_2"][language], key='counter_to_benefits_2')
         
@@ -381,10 +364,9 @@ def run():
             # Save the updated data back to the file
             save_data(filename, existing_data)
 
-            st.session_state.step = 6
 
     # Step 6: Final Evaluation
-    if st.session_state.step >= 6:
+    if st.session_state.count >= 7:
         existing_data = load_existing_data(filename)
 
         # Generate final evaluation prompt
@@ -402,14 +384,13 @@ def run():
         # Save the updated data back to the file
         save_data(filename, existing_data)
 
-        st.session_state.step = 7
  
 # Display GPT response
-    if st.session_state.step >= 7 and st.session_state.gpt_evaluation:
+    if st.session_state.count >= 8 and st.session_state.gpt_evaluation:
         st.subheader(translations["alien_evaluation"][language])
         st.write(st.session_state.gpt_evaluation)
 
-    if st.session_state.step >= 7:    
+    if st.session_state.count >= 8:    
         user_email = st.text_input(translations["share_email_if_enjoyed"][language])
         filename = f"data/{user_name}_data.json"
         if st.button(translations["submit_email"][language], key='submit_email') and user_email != "":
@@ -431,7 +412,6 @@ def run():
             with open(filename, "w") as json_file:
                 json.dump(existing_data, json_file)
 
-            st.session_state.step = 8  
     
 run()
  
