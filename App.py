@@ -134,18 +134,6 @@ def chat_with_gpt(prompt):
 )
     return response.choices[0].message.content
 
-def step_0_name_submission(language):
-    user_name = st.text_input(translations["welcome_message"][language], key='user_name')
-    if st.button(translations["submit_button"][language], key='submit_name') and user_name != '':
-        if check_username(user_name):
-            st.warning(translations["username_in_use"][language])
-        else:
-            add_username(user_name)
-            filename = f"data/{user_name}_data.json"
-            data = {"name": user_name}
-            with open(filename, "w") as json_file:
-                json.dump(data, json_file)
-            st.session_state.step = 1  # Advance to the next step only
 def run():
     language = st.selectbox('Choose your language / Kies uw taal ', ['en', 'nl'])
     st.title(translations["title"][language])
@@ -164,24 +152,18 @@ def run():
     if 'gpt_evaluation' not in st.session_state:
         st.session_state.gpt_response_examples = None
  
-    # Step 0: Name submission
-    if st.session_state.step >= 0:
-        user_name = st.text_input(translations["welcome_message"][language], key='user_name')
-        if st.button(translations["submit_button"][language], key='submit_name') and user_name != '':
-            if check_username(user_name):
-                st.warning(translations["username_in_use"][language])
-            else:
-                add_username(user_name)
-                filename = f"data/{user_name}_data.json"
-                data = {"name": user_name}
-                with open(filename, "w") as json_file:
-                    json.dump(data, json_file)
-                st.session_state.step = 1  # Advance to the next step only
+    user_name = st.text_input(translations["welcome_message"][language], key='user_name')
+    if st.button(translations["submit_button"][language], key='submit_name') and user_name != '':
+        if check_username(user_name):
+            st.warning(translations["username_in_use"][language])
+        else:
+            add_username(user_name)
+            filename = f"data/{user_name}_data.json"
+            data = {"name": user_name}
+            with open(filename, "w") as json_file:
+                json.dump(data, json_file)
+            st.session_state.step = 1  # Advance to the next step only
 
-
-# Call the function in the main run function
-    if st.session_state.step >= 0:
-        step_0_name_submission(language)
     
     # Ensure messages are displayed if already beyond step 0
     if st.session_state.step >= 1:
