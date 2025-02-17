@@ -1,6 +1,4 @@
-# translations_v3.py
- 
-translations = {
+{
 "title": {
 "en": "What's the value of your innovation?",
 "nl": "Wat is de waarde van uw innovatie?"
@@ -10,7 +8,8 @@ translations = {
 "en": "A value mapping game",
 "nl": "Een waardenmapping spel"
 },
- 
+
+
 "welcome_message": {
 "en": "Please enter your name to get started.",
 "nl": "Voer je naam in om te beginnen."
@@ -150,6 +149,6 @@ translations = {
 "thank_you_for_playing": {
 "en": "🚀 Thank you for playing!",
 "nl": "🚀 Bedankt voor het spelen!"
-},
+}
  
 }
