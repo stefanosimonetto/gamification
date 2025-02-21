@@ -175,7 +175,7 @@ def run():
         prompt_template =load_prompt_template(scenario)
         st.write(prompt_template["intro"])  # Display greeting
         st.session_state.count += 1
-
+    # Step 0: Ask for the user's name
     # Step 0: Ask for the user's name
     if st.session_state.count >= 1:
         user_name = st.text_input(translations["welcome_message"][language], key='user_name')
