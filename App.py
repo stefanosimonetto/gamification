@@ -144,8 +144,8 @@ def run():
         st.session_state.gpt_response_examples = None
     if 'gpt_evaluation' not in st.session_state:
         st.session_state.gpt_response_examples = None
-
-
+    if 'username' not in st.session_state:
+        st.session_state.username = None
     language = 'en'
     st.markdown(
     f"<h1 style='text-align: center;'>{translations['title'][language]}</h1>",
@@ -175,25 +175,25 @@ def run():
         prompt_template =load_prompt_template(scenario)
         st.write(prompt_template["intro"])  # Display greeting
         st.session_state.count += 1
-    # Step 0: Ask for the user's name
-    if st.session_state.count >= 1:
-        user_name = st.text_input(translations["welcome_message"][language], key='user_name')
-        if st.button(translations["submit_button"][language], key='submit_name') and user_name != '':
-            if check_username(user_name):
+
+    if st.session_state.count == 1:
+        username = st.text_input(translations["welcome_message"][language], key='username')
+        if st.button(translations["submit_button"][language], key='submit_name') and username != '':
+            if check_username(username):
                 st.warning(translations["username_in_use"][language])
             else:
-                add_username(user_name)
-                filename = f"data/{user_name}_data.json"
-                data = {"name": user_name}
+                add_username(username)
+                filename = f"data/{username}_data.json"
+                data = {"name": username}
                 with open(filename, "w") as json_file:
                     json.dump(data, json_file)
-
+                st.session_state.username = username
 
     # Step 1: Innovation description
-    if st.session_state.count >= 2:
+    if st.session_state.count == 2:
         prompt_template =load_prompt_template(scenario)
         # Display greeting and introduction
-        st.write(translations["greeting_message"][language].format(st.session_state['user_name']))  # Display greeting
+        st.write(translations["greeting_message"][language].format(st.session_state.username))  # Display greeting
         st.write(translations["bang_o_introduction"][language])  # Display introduction
 
         st.subheader(translations["step1_description"][language])
@@ -210,11 +210,11 @@ def run():
 
             # Save the data in a dictionary
             data = {
-                "name": user_name,
+                "name": username,
                 "innovation": user_innovation,
                 "gpt_description": response_to_innovation_from_gpt
             }
-            filename = f"data/{user_name}_data.json"
+            filename = f"data/{username}_data.json"
             # Write the dictionary to a JSON file
             save_data(filename, data)
 
@@ -233,7 +233,7 @@ def run():
         st.subheader(translations["step2_benefits"][language])
         user_benefits = st.text_area(translations["innovation_benefits"][language])
 
-        filename = f"data/{user_name}_data.json"
+        filename = f"data/{username}_data.json"
         
         if st.button(translations["submit_benefits"][language], key='submit_benefits') and user_benefits != '':
             st.write(translations["waiting_message"][language])
@@ -266,10 +266,10 @@ def run():
     # if st.session_state.count >= 3:
     #     st.subheader(translations["step3_counter_benefits"][language])
     #     counter_to_benefits= st.text_area(translations["reply_to_feedback"][language], key='counter_to_benefits')
-    #     filename = f"data/{user_name}_data.json"
+    #     filename = f"data/{username}_data.json"
     #     if st.button(translations["submit_counter_argument"][language], key='submit_counter') and counter_to_benefits != '':
  
-    #         filename = f"data/{user_name}_data.json"
+    #         filename = f"data/{username}_data.json"
            
     #         try:
     #             # Read the existing content from the file
@@ -297,7 +297,7 @@ def run():
         st.subheader(translations["step3_examples"][language])
         user_examples = st.text_area(translations["request_for_examples"][language], key='user_examples')
 
-        filename = f"data/{user_name}_data.json"
+        filename = f"data/{username}_data.json"
         
         if st.button(translations["submit_examples"][language], key='submit_examples') and user_examples != '':
             st.write(translations["waiting_message"][language])
@@ -385,7 +385,7 @@ def run():
         st.write("Email")
         st.write(st.session_state.count)
         user_email = st.text_input(translations["share_email_if_enjoyed"][language])
-        filename = f"data/{user_name}_data.json"
+        filename = f"data/{username}_data.json"
         if st.button(translations["submit_email"][language], key='submit_email') and user_email != "":
             try:
                 # Read the existing content from the file
