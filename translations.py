@@ -151,5 +151,12 @@ translations = {
 "en": "🚀 Thank you for playing!",
 "nl": "🚀 Bedankt voor het spelen!"
 },
- 
+"tell_us_how_to_improve": {
+"en": "Please, Tell us how to improve this game",
+"nl": "Vertel ons hoe we dit spel kunnen verbeteren"	
+},
+"submit_feedback": {
+    "en": "Submit Feedback",
+    "nl": "Verzend Feedback"
+    }
 }

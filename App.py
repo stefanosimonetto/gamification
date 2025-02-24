@@ -37,7 +37,6 @@ def generate_counter_to_examples_prompt(template, existing_data, counter_to_bene
         f"**Now, compose your response.**"
     )
 
-# Function to generate the final evaluation prompt
 def generate_final_evaluation_prompt(template, existing_data):
     context = template["final_evaluation_prompt"]["context"].format(existing_data=existing_data)
     task = "\n".join(template["final_evaluation_prompt"]["task"])
@@ -49,6 +48,7 @@ def generate_final_evaluation_prompt(template, existing_data):
         f"**Style Guidelines:**\n{style_guidelines}\n"
         f"**Now, compose your response.**"
     )
+
 def generate_examples_prompt(template, existing_data, user_examples):
     context = template["examples_prompt"]["context"].format(existing_data=existing_data, user_examples=user_examples)
     task = "\n".join(template["examples_prompt"]["task"])
@@ -68,17 +68,14 @@ def load_existing_data(filename):
     except FileNotFoundError:
         return {}
 
-# Function to save the updated data back to the file
 def save_data(filename, data):
     with open(filename, "w") as json_file:
         json.dump(data, json_file)
 
-# Function to load the prompt template from the JSON file
 def load_prompt_template(scenario):
     with open(f"scenarios/{scenario}.json", "rb") as file:
         return json.load(file)
 
-# Function to generate the prompt
 def generate_prompt(template, existing_data, user_benefits):
     context = template["benefits_prompt"]["context"].format(user_benefits=user_benefits)
     task = "\n".join(template["benefits_prompt"]["task"])
@@ -187,7 +184,7 @@ def run():
                 data = {"name": user_name}
                 with open(filename, "w") as json_file:
                     json.dump(data, json_file)
-
+                
 
     # Step 1: Innovation description
     if st.session_state.count >= 2:
@@ -195,7 +192,7 @@ def run():
         st.write(st.session_state.count)
         prompt_template =load_prompt_template(scenario)
         # Display greeting and introduction
-        st.write(translations["greeting_message"][language].format(st.session_state['user_name']))  # Display greeting
+        st.write(translations["greeting_message"][language].format(user_name))  # Display greeting
         st.write(translations["bang_o_introduction"][language])  # Display introduction
 
         st.subheader(translations["step1_description"][language])
@@ -364,13 +361,18 @@ def run():
             # Save the updated data back to the file
             save_data(filename, existing_data)
 
-
-    # Step 6: Final Evaluation
-    if st.session_state.count >= 7:
+    if st.session_state.count >= 7 :  
         existing_data = load_existing_data(filename)
+        select_only_user_answers = {
+            "Innovation":existing_data["user_examples"],
+            "Benefits":existing_data["user_benefits"],
+            "Counter to Benefits":existing_data["counter_to_benefits"],
+            "Examples":existing_data["user_examples"],
+            "Counter to Examples":existing_data["counter_to_benefits"]
+            }
 
         # Generate final evaluation prompt
-        prompt = generate_final_evaluation_prompt(prompt_template, existing_data)
+        prompt = generate_final_evaluation_prompt(prompt_template, select_only_user_answers)
         
         # Get GPT's final evaluation
         final_evaluation = chat_with_gpt(prompt)
@@ -402,8 +404,6 @@ def run():
                 # If the file doesn't exist, initialize with an empty dictionary
                 existing_data = {}
             
-            st.subheader(translations["thank_you_for_playing"][language])
-
             # Update the dictionary with new data
             existing_data.update({
                 "user_email": user_email
@@ -413,14 +413,49 @@ def run():
                 json.dump(existing_data, json_file)
             st.session_state.count+=1
 
+
     if st.session_state.count >= 9:
-        st.write("Baloons")
-        st.write(st.session_state.count)
-        st.balloons()  # Optional: adds a fun balloon animation
-        st.markdown(
-            "<h2 style='text-align: center; color: #4CAF50;'>Thanks for playing!</h2>",
-            unsafe_allow_html=True
+        # Collect improvement feedback as text
+        improvement_feedback = st.text_input(translations["tell_us_how_to_improve"][language])
+        
+        # Use radio buttons for satisfaction rating
+        satisfaction = st.radio(
+            "How satisfied are you with the game?",
+            options=["Very dissatisfied", "Dissatisfied", "Neutral", "Satisfied", "Very satisfied"]
+            )
+
+        not_satisfaction = st.radio(
+            "How not satisfied are you with the game?",
+            options=["Very dissatisfied", "Dissatisfied", "Neutral", "Satisfied", "Very satisfied"]
         )
+
+        if st.button(translations["submit_feedback"][language], key='submit_feedback'):
+            filename = f"data/{user_name}_data.json"
+            try:
+                # Read existing data from file
+                with open(filename, "r") as json_file:
+                    existing_data = json.load(json_file)
+            except FileNotFoundError:
+                existing_data = {}
+            
+            # Update the dictionary with the feedback data
+            existing_data.update({
+                "improvement_feedback": improvement_feedback,
+                "satisfaction": satisfaction,
+                "satisfaction2": not_satisfaction
+            })
+            
+            # Write the updated feedback data back to the file
+            with open(filename, "w") as json_file:
+                json.dump(existing_data, json_file)
+
+            st.session_state.count += 1
+            st.write(st.session_state.count)
+            st.balloons()  # Optional: adds a fun balloon animation
+            st.markdown(
+                "<h2 style='text-align: center; color: #4CAF50;'>Thanks for playing!</h2>",
+                unsafe_allow_html=True
+            )
 
         
 run()
