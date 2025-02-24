@@ -1,4 +1,10 @@
-# App_v5_TechMed2
+import sys
+import subprocess
+
+try:
+    subprocess.check_call([sys.executable, '-m', 'pip', 'install', '-r', 'requirements.txt'])
+except subprocess.CalledProcessError as e:
+    print("An error occurred while installing dependencies:", e)
  
 import streamlit as st
 from PIL import Image
