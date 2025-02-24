@@ -25,7 +25,7 @@ except LookupError:
     nltk.download('punkt')
 
 load_dotenv()  # Load variables from .env file
-api_key = os.getenv('OPENAI_API_KEY')
+api_key = st.secrets["API_KEY"]
 client = OpenAI(api_key=api_key)
 
 
