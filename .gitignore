@@ -1,2 +1,4 @@
 # Ignore .env file which contains sensitive data (API keys, etc.)
 .env
+.toml
+.streamlit/secrets.toml
