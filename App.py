@@ -231,7 +231,7 @@ def run():
 
             # Write the dictionary to a JSON file
             save_data(filename, data)
-            st.write(st.session_state.gpt_response_description)
+            # st.write(st.session_state.gpt_response_description)
             # Move to the next step
 
     # Display GPT response

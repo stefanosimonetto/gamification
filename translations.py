@@ -37,8 +37,8 @@ translations = {
 },
  
 "step1_description": {
-"en": "STEP 1/5: Tell us all about your genius innovation 💡",
-"nl": "STAP 1/5: Vertel ons alles over je geniale innovatie 💡"
+"en": "STEP 1/4: Tell us all about your genius innovation 💡",
+"nl": "STAP 1/4: Vertel ons alles over je geniale innovatie 💡"
 },
  
 "share_innovation": {
@@ -63,8 +63,8 @@ translations = {
 },
  
 "step2_benefits": {
-"en": "STEP 2/5: Tell us all the awesome benefits of your innovation! ⚡",
-"nl": "STAP 2/5: Vertel ons alle geweldige voordelen van je innovatie! ⚡"
+"en": "STEP 2/4: Tell us all the awesome benefits of your innovation! ⚡",
+"nl": "STAP 2/4: Vertel ons alle geweldige voordelen van je innovatie! ⚡"
 },
  
 "innovation_benefits": {
@@ -78,53 +78,33 @@ translations = {
 },
  
 "step3_counter_benefits": {
-"en": "STEP 3/5: You must persuade us...! 🔮",
-"nl": "STAP 3/5: Je moet ons overtuigen...! 🔮"
+"en": "STEP 3/4: We have questions... and we need examples! 🔎",
+"nl": "STAP 3/4: We hebben vragen... en we willen voorbeelden! 🔎"
 },
  
 "reply_to_feedback": {
-"en": "Type your reply to the alien's feedback here ✍️",
-"nl": "Typ je antwoord op de feedback van de aliens hier ✍️"
+"en": "Tell us how your innovation works in real-world situations. Who will use it? How will it create impact? Give us some examples, we're curious!",
+"nl": "Vertel ons hoe je innovatie werkt in echte situaties. Wie gaat het gebruiken? Hoe zal het impact maken? Geef ons wat voorbeelden, we zijn nieuwsgierig!"
 },
  
 "submit_counter_argument": {
-"en": "Submit your counter-argument!",
-"nl": "Dien je tegenargument in!"
-},
- 
-"thank_you_response": {
-"en": "Mmm... you’ve got a point, but I’m not sure you’ve convinced me with that counter-argument 🤔\n\nLet’s ask you another couple of questions!\n\nAnd remember, if you manage to convince us, we’ll definitely buy your innovation and bring gazillions to your Earthly friends! 💸",
-"nl": "Mmm... je hebt een punt, maar ik ben niet zeker of je me hebt overtuigd met dat tegenargument 🤔\n\nLaten we je nog een paar vragen stellen!\n\nEn onthoud, als je ons weet te overtuigen, kopen we zeker je innovatie en brengen we je aardse vrienden schatten van onschatbare waarde! 💸"
+"en": "Submit your use cases!",
+"nl": "Dien je voorbeelden in!"
 },
  
 "step3_examples": {
-"en": "STEP 4/5: Got any concrete examples? 🔎",
-"nl": "STAP 4/5: Heb je concrete voorbeelden? 🔎"
+"en": "STEP 4/4: Let's go deeper... 🔭",
+"nl": "STAP 4/4: Laten we dieper ingaan... 🔭"
 },
  
 "request_for_examples": {
-"en": "Show us how your innovation has already been used! Or, how do you imagine it could be used? We're curious!",
-"nl": "Laat ons zien hoe je innovatie al is gebruikt! Of, hoe stel je je voor dat het gebruikt kan worden? We zijn nieuwsgierig!"
+"en": "The conversation is getting interesting! Let's explore some final aspects of your idea. Answer our next question carefully...",
+"nl": "Het gesprek wordt interessant! Laten we enkele laatste aspecten van je idee onderzoeken. Beantwoord onze volgende vraag zorgvuldig..."
 },
  
 "submit_examples": {
-"en": "Submit your examples to the Aliens!",
-"nl": "Dien je voorbeelden in bij de Aliens!"
-},
- 
-"step5_counter_benefits": {
-"en": "STEP 5/5: You almost convinced us... ⚡",
-"nl": "STAP 5/5: Je hebt ons bijna overtuigd... ⚡"
-},
- 
-"reply_to_feedback_2": {
-"en": "Type your reply to the alien's feedback here ✍️",
-"nl": "Typ je antwoord op de feedback van de aliens hier ✍️"
-},
- 
-"submit_counter_argument_2": {
-"en": "Submit your counter-argument!",
-"nl": "Dien je tegenargument in!"
+"en": "Submit your answer!",
+"nl": "Dien je antwoord in!!"
 },
  
 "thanks_for_playing": {
@@ -153,7 +133,7 @@ translations = {
 },
 "tell_us_how_to_improve": {
 "en": "Please, Tell us how to improve this game",
-"nl": "Vertel ons hoe we dit spel kunnen verbeteren"	
+"nl": "Vertel ons hoe we dit spel kunnen verbeteren"    
 },
 "submit_feedback": {
     "en": "Submit Feedback",
