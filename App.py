@@ -309,7 +309,7 @@ def run():
         prompt_template = load_prompt_template(scenario)
 
         # Display thank you message and examples request
-        st.write(translations["thank_you_response"][language])
+        # st.write(translations["thank_you_response"][language])
         st.subheader(translations["step3_examples"][language])
         user_examples = st.text_area(translations["request_for_examples"][language], key='user_examples')
 
@@ -345,35 +345,35 @@ def run():
         st.subheader(translations["alien_feedback"][language])
         st.write(st.session_state.gpt_response_examples)
 
-        # STEP 5: Counter to examples
-    if st.session_state.count >= 6:
-        st.subheader(translations["step5_counter_benefits"][language])
-        counter_to_benefits_2 = st.text_area(translations["reply_to_feedback_2"][language], key='counter_to_benefits_2')
+    #     # STEP 5: Counter to examples
+    # if st.session_state.count >= 6:
+    #     st.subheader(translations["step5_counter_benefits"][language])
+    #     counter_to_benefits_2 = st.text_area(translations["reply_to_feedback_2"][language], key='counter_to_benefits_2')
         
-        filename = f"data/{user_name}_data.json"
+    #     filename = f"data/{user_name}_data.json"
         
-        if st.button(translations["submit_counter_argument_2"][language], key='submit_counter_2') and counter_to_benefits_2 != '':
-            st.write(translations["waiting_message"][language])
+    #     if st.button(translations["submit_counter_argument_2"][language], key='submit_counter_2') and counter_to_benefits_2 != '':
+    #         st.write(translations["waiting_message"][language])
 
-            existing_data = load_existing_data(filename)
+    #         existing_data = load_existing_data(filename)
 
-            # Generate counter to examples prompt
-            prompt = generate_counter_to_examples_prompt(prompt_template , existing_data, counter_to_benefits_2)
+    #         # Generate counter to examples prompt
+    #         prompt = generate_counter_to_examples_prompt(prompt_template , existing_data, counter_to_benefits_2)
             
-            # Get GPT's response
-            remarks_counter = chat_with_gpt(prompt)
-            st.session_state.gpt_counter_response = remarks_counter
+    #         # Get GPT's response
+    #         remarks_counter = chat_with_gpt(prompt)
+    #         st.session_state.gpt_counter_response = remarks_counter
 
-            # Update the existing data with the counter response
-            existing_data.update({
-                "counter_to_examples": counter_to_benefits_2,
-                "gpt_counter_response": remarks_counter
-            })
+    #         # Update the existing data with the counter response
+    #         existing_data.update({
+    #             "counter_to_examples": counter_to_benefits_2,
+    #             "gpt_counter_response": remarks_counter
+    #         })
 
-            # Save the updated data back to the file
-            save_data(filename, existing_data)
+    #         # Save the updated data back to the file
+    #         save_data(filename, existing_data)
 
-    if st.session_state.count >= 7 :  
+    if st.session_state.count >= 6 :  
         existing_data = load_existing_data(filename)
         select_only_user_answers = {
             "Innovation":existing_data["user_examples"],
@@ -400,11 +400,11 @@ def run():
 
  
 # Display GPT response
-    if st.session_state.count >= 8 and st.session_state.gpt_evaluation:
+    if st.session_state.count >= 6 and st.session_state.gpt_evaluation:
         st.subheader(translations["alien_evaluation"][language])
         st.write(st.session_state.gpt_evaluation)
 
-    if st.session_state.count >= 8:    
+    if st.session_state.count >= 6:    
         user_email = st.text_input(translations["share_email_if_enjoyed"][language])
         filename = f"data/{user_name}_data.json"
         if st.button(translations["submit_email"][language], key='submit_email') and user_email != "":
@@ -426,7 +426,7 @@ def run():
             st.session_state.count+=1
 
 
-    if st.session_state.count >= 9:
+    if st.session_state.count >= 7:
         # Collect improvement feedback as text
         improvement_feedback = st.text_input(translations["tell_us_how_to_improve"][language])
         
