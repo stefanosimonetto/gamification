@@ -1,20 +1,19 @@
 import sys
 import subprocess
 
-try:
-    subprocess.check_call([sys.executable, '-m', 'pip', 'install', '-r', 'requirements.txt'])
-except subprocess.CalledProcessError as e:
-    print("An error occurred while installing dependencies:", e)
+# try:
+#     subprocess.check_call([sys.executable, '-m', 'pip', 'install', '-r', 'requirements.txt'])
+# except subprocess.CalledProcessError as e:
+#     print("An error occurred while installing dependencies:", e)
  
 import streamlit as st
 from PIL import Image
 from bs4 import BeautifulSoup as soup
 from urllib.request import urlopen
 import json
-import os
 from openai import OpenAI
 from translations import translations
-from dotenv import load_dotenv
+# from dotenv import load_dotenv
 import os
 import nltk
 from nltk.data import find
@@ -24,7 +23,7 @@ try:
 except LookupError:
     nltk.download('punkt')
 
-load_dotenv()  # Load variables from .env file
+# load_dotenv()  # Load variables from .env file
 api_key = st.secrets["API_KEY"]
 client = OpenAI(api_key=api_key)
 
@@ -303,6 +302,13 @@ def run():
             with open(filename, "w") as json_file:
                 json.dump(existing_data, json_file)
 
+    if st.session_state.count >= 5 and st.session_state.gpt_response_examples:
+        # Load the prompt template from the file
+        prompt_template = load_prompt_template(scenario)
+
+        st.subheader(translations["alien_feedback"][language])
+        st.write(st.session_state.gpt_response_examples)
+
     # STEP 4: Examples
     if st.session_state.count >= 5:
         # Load the prompt template from the file
@@ -338,12 +344,12 @@ def run():
             save_data(filename, existing_data)
 
 # Display GPT response
-    if st.session_state.count >= 6 and st.session_state.gpt_response_examples:
-        # Load the prompt template from the file
-        prompt_template = load_prompt_template(scenario)
+    # if st.session_state.count >= 6 and st.session_state.gpt_response_examples:
+    #     # Load the prompt template from the file
+    #     prompt_template = load_prompt_template(scenario)
 
-        st.subheader(translations["alien_feedback"][language])
-        st.write(st.session_state.gpt_response_examples)
+    #     st.subheader(translations["alien_feedback"][language])
+    #     st.write(st.session_state.gpt_response_examples)
 
     #     # STEP 5: Counter to examples
     # if st.session_state.count >= 6:
@@ -379,8 +385,7 @@ def run():
             "Innovation":existing_data["user_examples"],
             "Benefits":existing_data["user_benefits"],
             "Counter to Benefits":existing_data["counter_to_benefits"],
-            "Examples":existing_data["user_examples"],
-            "Counter to Examples":existing_data["counter_to_benefits"]
+            "Examples":existing_data["user_examples"]
             }
 
         # Generate final evaluation prompt
