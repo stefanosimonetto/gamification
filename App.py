@@ -9,7 +9,9 @@ from translations import translations
 import os
 import nltk
 from nltk.data import find
-
+from google.oauth2 import service_account
+from googleapiclient.discovery import build
+from googleapiclient.http import MediaFileUpload
 try:
     find('tokenizers/punkt')
 except LookupError:
@@ -21,6 +23,36 @@ client = OpenAI(api_key=api_key)
 
 
 st.set_page_config(page_title='The Value Mapping Game', page_icon='./images/UTico.ico')
+
+import json
+from google.oauth2 import service_account
+from googleapiclient.discovery import build
+from googleapiclient.http import MediaFileUpload
+import streamlit as st
+
+def upload_to_drive(local_file, folder_id, service_account_info_str):
+    # Convert the service account info string to a dictionary
+    service_account_info = json.loads(service_account_info_str)
+    
+    SCOPES = ['https://www.googleapis.com/auth/drive.file']
+    credentials = service_account.Credentials.from_service_account_info(
+        service_account_info, scopes=SCOPES)
+    
+    drive_service = build('drive', 'v3', credentials=credentials)
+    
+    file_metadata = {
+        'name': local_file.split("/")[-1],
+        'parents': [folder_id]
+    }
+    media = MediaFileUpload(local_file, resumable=True)
+    
+    file = drive_service.files().create(
+        body=file_metadata,
+        media_body=media,
+        fields='id'
+    ).execute()
+    st.write('File uploaded. File ID: {}'.format(file.get('id')))
+
 
 def generate_counter_to_examples_prompt(template, existing_data, counter_to_benefits_2):
     context = template["counter_to_examples_prompt"]["context"].format(existing_data=existing_data, counter_to_benefits_2=counter_to_benefits_2)
@@ -381,23 +413,23 @@ def run():
 
     if st.session_state.count >= 8:
         # Collect improvement feedback as text
-        improvement_feedback = st.text_input(translations["tell_us_how_to_improve"][language])
+        improvement_feedback = st.text_input("Tell us how to improve")
         
         # Use radio buttons for satisfaction rating
         satisfaction = st.radio(
             "How satisfied are you with the game?",
             options=["Very dissatisfied", "Dissatisfied", "Neutral", "Satisfied", "Very satisfied"]
-            )
-
+        )
+        
         not_satisfaction = st.radio(
             "How not satisfied are you with the game?",
             options=["Very dissatisfied", "Dissatisfied", "Neutral", "Satisfied", "Very satisfied"]
         )
-
-        if st.button(translations["submit_feedback"][language], key='submit_feedback'):
+        
+        if st.button("Submit Feedback", key='submit_feedback'):
             filename = f"data/{user_name}_data.json"
             try:
-                # Read existing data from file
+                # Read existing data from file if it exists
                 with open(filename, "r") as json_file:
                     existing_data = json.load(json_file)
             except FileNotFoundError:
@@ -413,7 +445,15 @@ def run():
             # Write the updated feedback data back to the file
             with open(filename, "w") as json_file:
                 json.dump(existing_data, json_file)
+            
+            # Retrieve Google Drive credentials and folder ID from secrets
+            # Retrieve the service account info as a string from st.secrets
+            service_account_info_str = st.secrets["google_drive"]["service_account_info"]
+            folder_id = st.secrets["google_drive"]["folder_id"]
 
+            upload_to_drive(filename, folder_id, service_account_info_str)
+
+            
             st.session_state.count += 1
             st.write(st.session_state.count)
             st.balloons()  # Optional: adds a fun balloon animation
@@ -422,6 +462,5 @@ def run():
                 unsafe_allow_html=True
             )
 
-        
 run()
  
