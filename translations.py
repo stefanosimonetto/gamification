@@ -98,8 +98,8 @@ translations = {
 },
  
 "request_for_examples": {
-"en": "The conversation is getting interesting! Let's explore some final aspects of your idea. Answer our next question carefully...",
-"nl": "Het gesprek wordt interessant! Laten we enkele laatste aspecten van je idee onderzoeken. Beantwoord onze volgende vraag zorgvuldig..."
+"en": "The conversation is getting interesting! Let's explore some final aspects of your idea. Answer our previous question carefully...",
+"nl": "Het gesprek wordt interessant! Laten we enkele laatste aspecten van je idee onderzoeken. Beantwoord onze vorige vraag zorgvuldig..."
 },
  
 "submit_examples": {
