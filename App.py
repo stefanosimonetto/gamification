@@ -51,7 +51,7 @@ def upload_to_drive(local_file, folder_id, service_account_info_str):
         media_body=media,
         fields='id'
     ).execute()
-    st.write('File uploaded. File ID: {}'.format(file.get('id')))
+    # st.write('File uploaded. File ID: {}'.format(file.get('id')))
 
 
 def generate_counter_to_examples_prompt(template, existing_data, counter_to_benefits_2):
