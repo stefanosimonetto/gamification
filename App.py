@@ -198,7 +198,7 @@ def run():
             language = st.selectbox('Choose your language', ['en', 'nl'])
             scenario = st.selectbox(
                 'Choose the scenario', 
-                ['Select a scenario', 'sustainability', 'healthcare', 'education', 'finance', 'technology', 'other']
+                ['Select a scenario', 'innovation', 'sustainability', 'other']
             )
 
     if scenario != 'Select a scenario':
