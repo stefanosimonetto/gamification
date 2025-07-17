@@ -2,12 +2,12 @@
  
 translations = {
 "title": {
-"en": "How Responsible is Your Innovation? A Generative AI (Alien Intelligence) Game",
+"en": "How Responsible is Your Innovation? ",
 "nl": "Wat is de waarde van uw innovatie?"
 },
  
 "subheader": {
-"en": "A value mapping game",
+"en": "A Generative AI (Alien Intelligence) Game",
 "nl": "Een waardenmapping spel"
 },
  
