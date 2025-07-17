@@ -453,7 +453,7 @@ def run():
 
             
             st.session_state.count += 1
-            st.write(st.session_state.count)
+            # st.write(st.session_state.count)
             st.balloons()  # Optional: adds a fun balloon animation
             st.markdown(
                 "<h2 style='text-align: center; color: #4CAF50;'>Thanks for playing!</h2>",
