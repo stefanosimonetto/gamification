@@ -410,19 +410,26 @@ def run():
 
 
     if st.session_state.count >= 8:
-        # Collect improvement feedback as text
-        improvement_feedback = st.text_input("Tell us how to improve")
-        
-        # Use radio buttons for satisfaction rating
-        satisfaction = st.radio(
-            "How satisfied are you with the game?",
-            options=["Very dissatisfied", "Dissatisfied", "Neutral", "Satisfied", "Very satisfied"]
+        st.write("Please indicate how much you agree with the following statements about your experience playing the game.")
+
+        satisfaction1 = st.radio(
+            "The game prompted me to consider long-term impacts and unintended consequences.",
+            options=["Very dissatisfied", "Dissatisfied", "Satisfied", "Very satisfied"]
         )
-        
-        not_satisfaction = st.radio(
-            "How not satisfied are you with the game?",
-            options=["Very dissatisfied", "Dissatisfied", "Neutral", "Satisfied", "Very satisfied"]
+        satisfaction2 = st.radio(
+            "The game made me reflect on how different stakeholders might be affected. ",
+            options=["Very dissatisfied", "Dissatisfied", "Satisfied", "Very satisfied"]
         )
+        satisfaction3 = st.radio(
+            "The game encouraged me to question my assumptions.",
+            options=["Very dissatisfied", "Dissatisfied", "Satisfied", "Very satisfied"]
+        )
+        satisfaction4 = st.radio(
+            "The game made me consider how to adapt my innovation in response to feedback.",
+            options=["Very dissatisfied", "Dissatisfied", "Satisfied", "Very satisfied"]
+        )        
+
+        improvement_feedback = st.text_input("Overall, the game was helpful for thinking more responsibly about innovation. ")
         
         if st.button("Submit Feedback", key='submit_feedback'):
             filename = f"data/{user_name}_data.json"
@@ -436,8 +443,10 @@ def run():
             # Update the dictionary with the feedback data
             existing_data.update({
                 "improvement_feedback": improvement_feedback,
-                "satisfaction": satisfaction,
-                "satisfaction2": not_satisfaction
+                "satisfaction1": satisfaction1,
+                "satisfaction2": satisfaction2,
+                "satisfaction3": satisfaction3,
+                "satisfaction4": satisfaction4
             })
             
             # Write the updated feedback data back to the file
