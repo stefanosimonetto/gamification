@@ -2,7 +2,7 @@
  
 translations = {
 "title": {
-"en": "What's the value of your innovation?",
+"en": "How Responsible is Your Innovation? A Generative AI (Alien Intelligence) Game",
 "nl": "Wat is de waarde van uw innovatie?"
 },
  
