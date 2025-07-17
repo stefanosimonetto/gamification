@@ -410,7 +410,7 @@ def run():
 
 
     if st.session_state.count >= 8:
-        st.write("Please indicate how much you agree with the following statements about your experience playing the game.")
+        st.subheader("Please indicate how much you agree with the following statements about your experience playing the game.")
 
         satisfaction1 = st.radio(
             "The game prompted me to consider long-term impacts and unintended consequences.",
@@ -430,7 +430,7 @@ def run():
         )        
 
         improvement_feedback = st.text_input("Overall, the game was helpful for thinking more responsibly about innovation. ")
-        
+
         if st.button("Submit Feedback", key='submit_feedback'):
             filename = f"data/{user_name}_data.json"
             try:
