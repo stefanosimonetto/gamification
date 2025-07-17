@@ -222,8 +222,8 @@ def run():
 
     # Step 1: Innovation description
     if st.session_state.count >= 2:
-        st.write(scenario)  
-        st.write(st.session_state.count)
+        # st.write(scenario)  
+        # st.write(st.session_state.count)
         prompt_template =load_prompt_template(scenario)
         # Display greeting and introduction
         st.write(translations["greeting_message"][language].format(user_name))  # Display greeting
