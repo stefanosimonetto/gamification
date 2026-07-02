@@ -1,4 +1,4 @@
-# # translations_v3.py
+# translations_v3.py
  
 translations = {
 "title": {
@@ -12,9 +12,35 @@ translations = {
 },
  
 "welcome_message": {
-"en": "Please enter your name to get started.",
+"en": "User name",
 "nl": "Voer je naam in om te beginnen."
 },
+ 
+"welcome_message2": {
+"en": "Ciao2",
+"nl": "Voer je naam in om te beginnen."
+},
+ 
+"welcome_message3": {
+"en": "Ciao3",
+"nl": "Voer je naam in om te beginnen."
+},
+ 
+"welcome_message4": {
+"en": "Ciao4",
+"nl": "Voer je naam in om te beginnen."
+},
+ 
+"welcome_message5": {
+"en": "Ciao5",
+"nl": "Voer je naam in om te beginnen."
+},
+ 
+"welcome_message6": {
+"en": "Ciao6",
+"nl": "Voer je naam in om te beginnen."
+},
+ 
  
 "submit_button": {
 "en": "Let's start to play!",
@@ -41,11 +67,32 @@ translations = {
 "nl": "STAP 1/4: Vertel ons alles over je geniale innovatie 💡"
 },
  
-"share_innovation": {
-"en": "Go ahead, spill the beans about your awesome innovation! We're all ears 🎧",
-"nl": "Vertel het ons, deel het geheim van je geweldige innovatie! We luisteren aandachtig. 🎧"
+"share_innovation1": {
+"en": "Go ahead, spill the beans about your elica1",
+"nl": "Vertel het ons, deel het geheim van je elica1! We luisteren aandachtig. 🎧"
 },
  
+"share_innovation2": {
+"en": "Go ahead, spill the beans about your elica2",
+"nl": "Vertel het ons, deel het geheim van je elica2! We luisteren aandachtig. 🎧"
+},
+ 
+"share_innovation3": {
+"en": "Go ahead, spill the beans about your elica3",
+"nl": "Vertel het ons, deel het geheim van je elica3! We luisteren aandachtig. 🎧"
+},
+"share_innovation4": {
+"en": "Go ahead, spill the beans about your elica4",
+"nl": "Vertel het ons, deel het geheim van je elica4! We luisteren aandachtig. 🎧"
+},
+"share_innovation5": {
+"en": "Go ahead, spill the beans about your elica5",
+"nl": "Vertel het ons, deel het geheim van je elica5! We luisteren aandachtig. 🎧"
+},
+"share_innovation6": {
+"en": "Go ahead, spill the beans about your elica6",
+"nl": "Vertel het ons, deel het geheim van je elica6! We luisteren aandachtig. 🎧"
+},
 "submit_innovation_description": {
 "en": "Submit the description of your innovation!",
 "nl": "Dien de beschrijving van je innovatie in!"
