@@ -3,7 +3,7 @@ from PIL import Image
 from bs4 import BeautifulSoup as soup
 from urllib.request import urlopen
 import json
-from openai import OpenAI
+from openai import APIConnectionError, APIError, AuthenticationError, OpenAI, PermissionDeniedError, RateLimitError
 from translations import translations
 # from dotenv import load_dotenv
 import os
@@ -143,10 +143,11 @@ def add_username(username):
         file.write(username + '\n')
  
 def chat_with_gpt(prompt, system_message=None):
-    response= client.chat.completions.create(
-    model="gpt-4o-mini", # alternative: gpt-3.5-turbo-1106 OR gpt-4o OR gpt-4o-mini
-    response_format={"type":"text"},
-    messages=[{"role":"system", "content":("""
+    try:
+        response = client.chat.completions.create(
+        model="gpt-4o-mini", # alternative: gpt-3.5-turbo-1106 OR gpt-4o OR gpt-4o-mini
+        response_format={"type":"text"},
+        messages=[{"role":"system", "content":("""
 You are an advanced alien intelligence, representing the esteemed Intergalactic Trading Collective. Your mission is to engage with human innovators, critically evaluate their proposals, and assess their potential for integration into the interstellar marketplace. Your superior intellect allow you to critically engage with the deeper nuances behind each innovation, envisioning and embracing their potential and broader implications. This ability of yours will be critical in supporting the innovator in their (responsible) innovation process.
 Your Key Responsibilities:\n
 🔹 Anticipation → Predict and probe potential future impacts, risks, and unintended consequences of innovations.\n
@@ -161,9 +162,34 @@ Gameplay Rules & Engagement\n
 - Detect nonsense input—if the response is meaningless or overly vague, request a proper answer.\n
 \n
 You are not just an evaluator—you are a cosmic philosopher of technology, probing beyond the surface to unveil true innovation.""")},
-    {"role":"user", "content":prompt},
-    ]
-)
+        {"role":"user", "content":prompt},
+        ]
+    )
+    except RateLimitError as exc:
+        error_body = getattr(exc, "body", None) or {}
+        error_code = error_body.get("code") if isinstance(error_body, dict) else None
+        if error_code == "insufficient_quota":
+            st.error("OpenAI rejected this request because the API key has insufficient quota.")
+            st.info(
+                "Check that the key in `.streamlit/secrets.toml` belongs to the funded OpenAI "
+                "project/organization, that project billing is enabled, and that the project or "
+                "monthly budget limit has not been reached."
+            )
+        else:
+            st.error("OpenAI rate limit reached. Please wait a moment and try again.")
+        st.stop()
+    except AuthenticationError:
+        st.error("OpenAI rejected the API key. Check that `API_KEY` in `.streamlit/secrets.toml` is active and copied correctly.")
+        st.stop()
+    except PermissionDeniedError:
+        st.error("This OpenAI API key does not have permission to use the requested model or project.")
+        st.stop()
+    except APIConnectionError:
+        st.error("Could not connect to the OpenAI API. Check your network connection and try again.")
+        st.stop()
+    except APIError as exc:
+        st.error(f"OpenAI returned an API error: {exc}")
+        st.stop()
     return response.choices[0].message.content
 
 def run():
