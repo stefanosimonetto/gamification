@@ -102,6 +102,7 @@ def save_data(filename, data):
         json.dump(data, json_file)
 
 def load_prompt_template(scenario):
+    scenario="innovation_serious"
     with open(f"scenarios/{scenario}.json", "rb") as file:
         return json.load(file)
 
