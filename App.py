@@ -145,7 +145,7 @@ def add_username(username):
 def chat_with_gpt(prompt, system_message=None):
     try:
         response = client.chat.completions.create(
-        model="gpt-4o-mini", # alternative: gpt-3.5-turbo-1106 OR gpt-4o OR gpt-4o-mini
+        model="gpt-5.4-mini", # alternative: gpt-4o-mini OR gpt-3.5-turbo-1106 OR gpt-4o OR gpt-4o-mini
         response_format={"type":"text"},
         messages=[{"role":"system", "content":("""
 You are an advanced alien intelligence, representing the esteemed Intergalactic Trading Collective. Your mission is to engage with human innovators, critically evaluate their proposals, and assess their potential for integration into the interstellar marketplace. Your superior intellect allow you to critically engage with the deeper nuances behind each innovation, envisioning and embracing their potential and broader implications. This ability of yours will be critical in supporting the innovator in their (responsible) innovation process.
